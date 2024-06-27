@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'category_screen.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({Key? key}) : super(key: key);
@@ -22,7 +23,11 @@ class StartScreen extends StatelessWidget {
             ElevatedButton(
               child: const Text('All Food'),
               onPressed: () {
-                // Navigate to All Food Screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CategoryScreen()),
+                );
               },
             ),
             ElevatedButton(
