@@ -1,0 +1,1 @@
+// category_screen.dart is a StatefulWidget that displays the list of categories
