@@ -5,9 +5,7 @@ import 'package:http/http.dart' as http;
 import 'custom_appbar.dart';
 
 class MealScreen extends StatefulWidget {
-  final int mealId;
-
-  const MealScreen({Key? key, required this.mealId}) : super(key: key);
+  const MealScreen({super.key});
 
   @override
   _MealScreenState createState() => _MealScreenState();
@@ -15,11 +13,12 @@ class MealScreen extends StatefulWidget {
 
 class _MealScreenState extends State<MealScreen> {
   late Future<Meal> _mealFuture;
+  bool isFavorited = false;
+  late int mealId;
 
   @override
   void initState() {
     super.initState();
-    _mealFuture = getMeal(widget.mealId);
   }
 
   Future<Meal> getMeal(int id) async {
@@ -41,34 +40,125 @@ class _MealScreenState extends State<MealScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
+    mealId = arguments['mealId'];
+    _mealFuture = getMeal(mealId);
+
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Meal Details'),
-      body: FutureBuilder<Meal>(
-        future: _mealFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            Meal meal = snapshot.data!;
-            return ListView(
-              children: <Widget>[
-                Image.network(meal.imageUrl),
-                Text('ID: ${meal.id}'),
-                Text('Name: ${meal.name}'),
-                Text('Category: ${meal.category}'),
-                Text('Area: ${meal.area}'),
-                Text('Instructions: ${meal.instructions}'),
-                ...meal.ingredients
-                    .map((ingredient) => Text('Ingredient: $ingredient')),
-                ...meal.measures.map((measure) => Text('Measure: $measure')),
-              ],
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+      appBar: const CustomAppBar(
+        title: 'Meal Detailes',
+      ),
+      body: Stack(
+        children: <Widget>[
+          FutureBuilder<Meal>(
+            future: _mealFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (snapshot.hasData) {
+                Meal meal = snapshot.data!;
+                return ListView(
+                  children: <Widget>[
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: constraints.maxWidth / 2,
+                              height: constraints.maxWidth / 2,
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Image.network(meal.imageUrl),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 3.0,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      meal.name,
+                                      style: const TextStyle(
+                                        fontSize: 28.0,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 30.0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            'Category: ${meal.category}',
+                                            style: const TextStyle(
+                                              fontSize: 18.0,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Area: ${meal.area}',
+                                            style: const TextStyle(
+                                              fontSize: 18.0,
+                                            ),
+                                          ),
+                                          const Text(
+                                            'Ingredients:',
+                                            style: TextStyle(
+                                              fontSize: 18.0,
+                                            ),
+                                          ),
+                                          ...List.generate(
+                                            meal.ingredients.length,
+                                            (index) => Text(
+                                              '${meal.ingredients[index]}: ${meal.measures[index]}',
+                                              style: const TextStyle(
+                                                fontSize: 14.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const Text('Instructions:',
+                        style: TextStyle(fontSize: 24.0)),
+                    Text(meal.instructions),
+                  ],
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+          Positioned(
+            top: 10.0,
+            right: 10.0,
+            child: FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  isFavorited = !isFavorited;
+                });
+              },
+              child: Icon(
+                Icons.favorite,
+                color: isFavorited ? Colors.red : Colors.grey,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

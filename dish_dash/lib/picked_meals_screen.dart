@@ -3,14 +3,11 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'meal_screen.dart';
 import 'meal.dart';
 import 'custom_appbar.dart';
 
 class PickedMealsScreen extends StatefulWidget {
-  final String category;
-
-  const PickedMealsScreen({super.key, required this.category});
+  const PickedMealsScreen({super.key});
 
   @override
   _PickedMealsScreenState createState() => _PickedMealsScreenState();
@@ -18,11 +15,11 @@ class PickedMealsScreen extends StatefulWidget {
 
 class _PickedMealsScreenState extends State<PickedMealsScreen> {
   late Future<List<Meal>> _pickedMealsFuture;
+  late String category;
 
   @override
   void initState() {
     super.initState();
-    _pickedMealsFuture = getPickedMeals(widget.category);
   }
 
   Future<List<Meal>> getPickedMeals(String category) async {
@@ -51,8 +48,14 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
+    category = arguments['category'];
+    _pickedMealsFuture = getPickedMeals(category);
+
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Picked Meals'),
+      appBar: const CustomAppBar(
+        title: 'Picked Meals',
+      ),
       body: FutureBuilder<List<Meal>>(
         future: _pickedMealsFuture,
         builder: (context, snapshot) {
@@ -73,29 +76,30 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
                 return Card(
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              MealScreen(mealId: int.parse(meals[index].id)),
-                        ),
+                        '/meal_card',
+                        arguments: {'mealId': int.parse(meals[index].id)},
                       );
                     },
                     child: Column(
                       children: <Widget>[
                         SizedBox(
-                          width: 250.0,
-                          height: 250.0,
+                          width: 150.0,
+                          height: 150.0,
                           child: Image.network(meals[index].imageUrl),
                         ),
                         Expanded(
-                          child: Center(
-                            child: Text(
-                              meals[index].name,
-                              style: const TextStyle(fontSize: 20.0),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Text(
+                                meals[index].name,
+                                style: const TextStyle(fontSize: 20.0),
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
                             ),
                           ),
                         ),

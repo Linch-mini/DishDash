@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'category_screen.dart';
+import 'meal_screen.dart';
+import 'picked_meals_screen.dart';
 import 'start_screen.dart';
 import 'custom_theme.dart';
 
@@ -8,7 +11,7 @@ void main() {
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,13 @@ class MainApp extends StatelessWidget {
             themeMode: themeProvider.themeMode,
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
-            home: StartScreen(),
+            initialRoute: "/",
+            routes: {
+              "/": (context) => const StartScreen(),
+              "/categories": (context) => const CategoryScreen(),
+              "/meals": (context) => const PickedMealsScreen(),
+              "/meal_card": (context) => const MealScreen(),
+            },
           );
         },
       ),

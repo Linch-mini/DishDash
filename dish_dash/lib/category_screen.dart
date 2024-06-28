@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'picked_meals_screen.dart';
 import 'custom_appbar.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -40,7 +39,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Categories'),
+      appBar: const CustomAppBar(
+        title: 'Categories',
+      ),
       body: FutureBuilder<List<String>>(
         future: _categoriesFuture,
         builder: (context, snapshot) {
@@ -55,12 +56,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 return ListTile(
                   title: Text(snapshot.data![index]),
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            PickedMealsScreen(category: snapshot.data![index]),
-                      ),
+                      '/meals',
+                      arguments: {'category': snapshot.data![index]},
                     );
                   },
                 );
