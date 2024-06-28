@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'meal.dart';
 import 'dart:convert';
@@ -7,7 +9,7 @@ import 'package:collection/collection.dart';
 class MealScreen extends StatefulWidget {
   final int mealId;
 
-  const MealScreen({Key? key, required this.mealId}) : super(key: key);
+  const MealScreen({super.key, required this.mealId});
 
   @override
   _MealScreenState createState() => _MealScreenState();
@@ -63,9 +65,9 @@ class _MealScreenState extends State<MealScreen> {
                       builder: (context, constraints) {
                         return Row(
                           children: <Widget>[
-                            Container(
-                              width: constraints.maxWidth / 2, // ширина изображения
-                              height: constraints.maxWidth / 2, // высота изображения
+                            SizedBox(
+                              width: constraints.maxWidth / 2,
+                              height: constraints.maxWidth / 2,
                               child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Image.network(meal.imageUrl),
@@ -73,21 +75,21 @@ class _MealScreenState extends State<MealScreen> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 3.0), // добавьте отступ слева
+                                padding: const EdgeInsets.only(left: 3.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Text('${meal.name}', style: TextStyle(fontSize: 28.0)),
+                                    Text(meal.name, style: const TextStyle(fontSize: 28.0)),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 30.0), // добавьте отступ слева
+                                      padding: const EdgeInsets.only(left: 30.0),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          Text('Category: ${meal.category}', style: TextStyle(fontSize: 18.0)),
-                                          Text('Area: ${meal.area}', style: TextStyle(fontSize: 18.0)),
-                                          Text('Ingredients:', style: TextStyle(fontSize: 18.0)),
+                                          Text('Category: ${meal.category}', style: const TextStyle(fontSize: 18.0)),
+                                          Text('Area: ${meal.area}', style: const TextStyle(fontSize: 18.0)),
+                                          const Text('Ingredients:', style: TextStyle(fontSize: 18.0)),
                                           ...List.generate(meal.ingredients.length, (index) =>
-                                              Text('${meal.ingredients[index]}: ${meal.measures[index]}', style: TextStyle(fontSize: 14.0))
+                                              Text('${meal.ingredients[index]}: ${meal.measures[index]}', style: const TextStyle(fontSize: 14.0))
                                           ),
                                         ],
                                       ),
@@ -100,8 +102,8 @@ class _MealScreenState extends State<MealScreen> {
                         );
                       },
                     ),
-                    Text('Instructions:', style: TextStyle(fontSize: 24.0)),
-                    Text('${meal.instructions}'),
+                    const Text('Instructions:', style: TextStyle(fontSize: 24.0)),
+                    Text(meal.instructions),
                   ],
                 );
               } else {

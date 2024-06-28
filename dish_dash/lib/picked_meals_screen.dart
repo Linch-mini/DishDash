@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -7,7 +9,7 @@ import 'meal.dart';
 class PickedMealsScreen extends StatefulWidget {
   final String category;
 
-  const PickedMealsScreen({Key? key, required this.category}) : super(key: key);
+  const PickedMealsScreen({super.key, required this.category});
 
   @override
   _PickedMealsScreenState createState() => _PickedMealsScreenState();
@@ -31,15 +33,15 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
       List meals = jsonResponse['meals'];
       return meals
           .map((meal) => Meal(
-        id: meal['idMeal'] as String,
-        name: meal['strMeal'] as String,
-        category: '',
-        area: '',
-        instructions: '',
-        imageUrl: meal['strMealThumb'] as String,
-        ingredients: [],
-        measures: [],
-      ))
+                id: meal['idMeal'] as String,
+                name: meal['strMeal'] as String,
+                category: '',
+                area: '',
+                instructions: '',
+                imageUrl: meal['strMealThumb'] as String,
+                ingredients: [],
+                measures: [],
+              ))
           .toList();
     } else {
       throw Exception('Failed to load meals');
@@ -62,7 +64,7 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
           } else if (snapshot.hasData) {
             List<Meal> meals = snapshot.data!;
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 crossAxisSpacing: 2,
                 mainAxisSpacing: 2,
@@ -75,14 +77,14 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MealScreen(
-                              mealId: int.parse(meals[index].id)),
+                          builder: (context) =>
+                              MealScreen(mealId: int.parse(meals[index].id)),
                         ),
                       );
                     },
                     child: Column(
                       children: <Widget>[
-                        Container(
+                        SizedBox(
                           width: 250.0,
                           height: 250.0,
                           child: Image.network(meals[index].imageUrl),

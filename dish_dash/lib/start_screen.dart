@@ -6,11 +6,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class StartScreen extends StatelessWidget {
-  StartScreen({Key? key}) : super(key: key);
-
+  const StartScreen({super.key});
 
   Future<Meal> getRandomMeal() async {
-    final response = await http.get(Uri.parse('https://www.themealdb.com/api/json/v1/1/random.php'));
+    final response = await http
+        .get(Uri.parse('https://www.themealdb.com/api/json/v1/1/random.php'));
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
@@ -54,7 +54,8 @@ class StartScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MealScreen(mealId: int.parse(randomMeal.id)),
+                    builder: (context) =>
+                        MealScreen(mealId: int.parse(randomMeal.id)),
                   ),
                 );
               },
