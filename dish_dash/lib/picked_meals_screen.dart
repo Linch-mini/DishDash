@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -8,7 +10,7 @@ import 'custom_appbar.dart';
 class PickedMealsScreen extends StatefulWidget {
   final String category;
 
-  const PickedMealsScreen({Key? key, required this.category}) : super(key: key);
+  const PickedMealsScreen({super.key, required this.category});
 
   @override
   _PickedMealsScreenState createState() => _PickedMealsScreenState();
@@ -37,7 +39,7 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
                 category: '',
                 area: '',
                 instructions: '',
-                imageUrl: '',
+                imageUrl: meal['strMealThumb'] as String,
                 ingredients: [],
                 measures: [],
               ))
@@ -58,24 +60,53 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
+          } else if (snapshot.hasData) {
+            List<Meal> meals = snapshot.data!;
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+              ),
+              itemCount: meals.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(snapshot.data![index].name),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MealScreen(
-                            mealId: int.parse(snapshot.data![index].id)),
-                      ),
-                    );
-                  },
+                return Card(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MealScreen(mealId: int.parse(meals[index].id)),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 250.0,
+                          height: 250.0,
+                          child: Image.network(meals[index].imageUrl),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              meals[index].name,
+                              style: const TextStyle(fontSize: 20.0),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             );
+          } else {
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
