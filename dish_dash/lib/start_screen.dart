@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 import 'category_screen.dart';
+import 'meal_screen.dart';
+import 'meal.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class StartScreen extends StatelessWidget {
-  const StartScreen({Key? key}) : super(key: key);
+  StartScreen({Key? key}) : super(key: key);
+
+
+  Future<Meal> getRandomMeal() async {
+    final response = await http.get(Uri.parse('https://www.themealdb.com/api/json/v1/1/random.php'));
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      var meal = jsonResponse['meals'][0];
+      return Meal.fromJson(meal);
+    } else {
+      throw Exception('Failed to load random meal');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +34,7 @@ class StartScreen extends StatelessWidget {
             ElevatedButton(
               child: const Text('Favourites'),
               onPressed: () {
-                // Navigate to Favourites Screen
+                // Navigation to favourites screen
               },
             ),
             ElevatedButton(
@@ -32,8 +49,14 @@ class StartScreen extends StatelessWidget {
             ),
             ElevatedButton(
               child: const Text('Random Meal'),
-              onPressed: () {
-                // Navigate to Random Meal Screen
+              onPressed: () async {
+                Meal randomMeal = await getRandomMeal();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MealScreen(mealId: int.parse(randomMeal.id)),
+                  ),
+                );
               },
             ),
           ],
