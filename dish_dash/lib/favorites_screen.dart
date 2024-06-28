@@ -1,0 +1,1 @@
+// favorites_screen.dart is a StatefulWidget that displays the user's favorite dishes.

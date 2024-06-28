@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'meal_screen.dart';
 import 'meal.dart';
+import 'custom_appbar.dart';
 
 class PickedMealsScreen extends StatefulWidget {
   final String category;
@@ -51,9 +52,7 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Picked Meals'),
-      ),
+      appBar: const CustomAppBar(title: 'Picked Meals'),
       body: FutureBuilder<List<Meal>>(
         future: _pickedMealsFuture,
         builder: (context, snapshot) {
@@ -89,11 +88,15 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
                           height: 250.0,
                           child: Image.network(meals[index].imageUrl),
                         ),
-                        Center(
-                          child: Text(
-                            meals[index].name,
-                            style: const TextStyle(fontSize: 20.0),
-                            textAlign: TextAlign.center,
+                        Expanded(
+                          child: Center(
+                            child: Text(
+                              meals[index].name,
+                              style: const TextStyle(fontSize: 20.0),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
                           ),
                         ),
                       ],
