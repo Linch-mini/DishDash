@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'category_screen.dart';
+import 'custom_appbar.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({Key? key}) : super(key: key);
@@ -7,9 +8,7 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meal App'),
-      ),
+      appBar: const CustomAppBar(title: 'Dish Dash'),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

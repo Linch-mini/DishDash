@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'meal.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'custom_appbar.dart';
 
 class MealScreen extends StatefulWidget {
   final int mealId;
@@ -41,9 +42,7 @@ class _MealScreenState extends State<MealScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meal Details'),
-      ),
+      appBar: const CustomAppBar(title: 'Meal Details'),
       body: FutureBuilder<Meal>(
         future: _mealFuture,
         builder: (context, snapshot) {
