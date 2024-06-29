@@ -50,18 +50,35 @@ class _CategoryScreenState extends State<CategoryScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            return ListView.builder(
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+              ),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(snapshot.data![index]),
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/meals',
-                      arguments: {'category': snapshot.data![index]},
-                    );
-                  },
+                return Card(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/meals',
+                        arguments: {'category': snapshot.data![index]},
+                      );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 150.0,
+                          height: 150.0,
+                          child: Image.asset(
+                              'assets/images/${snapshot.data![index]}.jpg'),
+                        ),
+                        Text(snapshot.data![index]),
+                      ],
+                    ),
+                  ),
                 );
               },
             );
