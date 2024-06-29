@@ -19,9 +19,10 @@ jobs:
 
       - run: flutter pub get
         working-directory: ./dish_dash
+
       - run: flutter build web --release lib/main.dart
         working-directory: ./dish_dash
 
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
-          customArgs: "lib/main.dart"
+          customArgs: "./dish_dash/lib/main.dart"
