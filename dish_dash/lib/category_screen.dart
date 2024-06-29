@@ -51,8 +51,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
                 crossAxisSpacing: 2,
                 mainAxisSpacing: 2,
               ),
@@ -68,14 +68,28 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       );
                     },
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Container(
-                          width: 150.0,
-                          height: 150.0,
+                        const SizedBox(height: 5),
+                        FractionallySizedBox(
+                          widthFactor: 0.7,  
                           child: Image.asset(
-                              'assets/images/${snapshot.data![index]}.jpg'),
+                            'assets/images/${snapshot.data![index]}.jpg',
+                            fit: BoxFit.cover, 
+                          ),
                         ),
-                        Text(snapshot.data![index]),
+                        Padding(
+                          padding: const EdgeInsets.all(5.0), 
+                          child: Align(
+                            alignment: Alignment.bottomCenter, 
+                            child: Text(
+                              snapshot.data![index],
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
