@@ -12,8 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -27,5 +25,5 @@ jobs:
       - name: Deploy to GH Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZWQyNTUxOQAAACBNFADThDC2w5nd1eWZ6rRjRHXw+Zxzbg9TOlsbal0aYwAAAKDUbqjf1G6o3wAAAAtzc2gtZWQyNTUxOQAAACBNFADThDC2w5nd1eWZ6rRjRHXw+Zxzbg9TOlsbal0aYwAAAECO+rC7JolaEX/HsLfeQ3QobgwQ+1O1KDgRjMyJ3kSXFk0UANOEMLbDmd3V5ZnqtGNEdfD5nHNuD1M6WxtqXRpjAAAAG2tpcmlsbGVmaW1vdmljMTQxQGdtYWlsLmNvbQEC }}
           publish_dir: ./build/web
