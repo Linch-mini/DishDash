@@ -1,4 +1,4 @@
-name: Flutter Code Formatting
+name: Flutter Code Linting
 
 on:
   push:
@@ -20,5 +20,5 @@ jobs:
       - run: flutter pub get
         working-directory: ./dish_dash
 
-      - run: flutter format --set-exit-if-changed .
+      - run: flutter analyze  --no-fatal-warnings --no-fatal-infos
         working-directory: ./dish_dash
