@@ -1,4 +1,4 @@
-name: Flutter Code Formatting
+name: Flutter Code Building
 
 on:
   push:
@@ -20,5 +20,11 @@ jobs:
       - run: flutter pub get
         working-directory: ./dish_dash
 
-      #- run: flutter format --set-exit-if-changed .
-      #  working-directory: ./dish_dash
+      - run: flutter build apk
+        working-directory: ./dish_dash
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dish_dash_app
+          path: build/app/outputs/flutter-apk/app-release.apk
