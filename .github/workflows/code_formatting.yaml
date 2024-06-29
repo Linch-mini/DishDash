@@ -18,5 +18,7 @@ jobs:
           flutter-version: 3.22.2
 
       - run: flutter pub get
+        working-directory: ./dish_dash
 
       - run: flutter analyze  --no-fatal-warnings --no-fatal-infos
+        working-directory: ./dish_dash
