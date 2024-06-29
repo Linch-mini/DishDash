@@ -25,5 +25,5 @@ jobs:
 
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
-          customArgs: "./dish_dash/lib/main.dart"
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          customArgs: /lib/main.dart
+          workingDir: ./dish_dash
