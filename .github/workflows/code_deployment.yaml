@@ -25,5 +25,5 @@ jobs:
 
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
-          customArgs: /lib/main.dart
+          customArgs: lib/main.dart
           workingDir: ./dish_dash
