@@ -27,4 +27,3 @@ jobs:
         with:
           customArgs: "./dish_dash/lib/main.dart"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          buildDir: ./dish_dash/build/web
