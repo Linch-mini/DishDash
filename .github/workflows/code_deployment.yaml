@@ -19,11 +19,9 @@ jobs:
 
       - run: flutter pub get
         working-directory: ./dish_dash
-      - run: flutter build web --release -t lib/main.dart
+      - run: flutter build web --release lib/main.dart
         working-directory: ./dish_dash
 
-      - name: Deploy to GH Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - uses: bluefireteam/flutter-gh-pages@v7
         with:
-          github_token: ${{ AAAAC3NzaC1lZDI1NTE5AAAAIE0UANOEMLbDmd3V5ZnqtGNEdfD5nHNuD1M6WxtqXRpj }}
-          publish_dir: ./build/web
+          customArgs: "lib/main.dart"
