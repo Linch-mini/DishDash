@@ -20,7 +20,7 @@ jobs:
       - run: flutter pub get
         working-directory: ./dish_dash
 
-      - run: flutter build web
+      - run: flutter build web --release
         working-directory: ./dish_dash
 
       - name: Deploy to GH Pages
