@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
             darkTheme: ThemeData.dark(),
             initialRoute: "/",
             routes: {
-              "/": (context) => const StartScreen(),
+              "/": (context) => StartScreen(),
               "/categories": (context) => const CategoryScreen(),
               "/meals": (context) => const PickedMealsScreen(),
               "/meal_card": (context) => const MealScreen(),

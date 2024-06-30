@@ -1,13 +1,30 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'custom_appbar.dart';
+import 'package:translator/translator.dart';
 import 'meal.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class StartScreen extends StatelessWidget {
+class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
+
+  @override
+  _StartScreenState createState() => _StartScreenState();
+}
+
+class _StartScreenState extends State<StartScreen> {
+  final translator = GoogleTranslator();
+  String currentLanguage = 'en';
+
+  Future<String> translate(String input) async {
+    var translation = await translator.translate(input, from: 'en', to: currentLanguage);
+    return translation.text;
+  }
+
+  void changeLanguage() {
+    setState(() {
+      currentLanguage = currentLanguage == 'en' ? 'ru' : 'en';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +37,12 @@ class StartScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: changeLanguage,
+          ),
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -37,14 +60,24 @@ class StartScreen extends StatelessWidget {
               children: <Widget>[
                 SizedBox(
                   width: 205,
-                  height: 62, 
+                  height: 62,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color.fromARGB(255, 184, 60, 206),
                       textStyle: const TextStyle(fontSize: 20),
                     ),
-                    child: const Text('Favourites'),
+                    child: FutureBuilder<String>(
+                      future: translate('Favourites'),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(snapshot.data!);
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
                     onPressed: () {
                       // Navigate to Favourites Screen
                     },
@@ -53,14 +86,24 @@ class StartScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 SizedBox(
                   width: 205,
-                  height: 62, 
+                  height: 62,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color.fromARGB(255, 184, 60, 206),
                       textStyle: const TextStyle(fontSize: 20),
                     ),
-                    child: const Text('All Food'),
+                    child: FutureBuilder<String>(
+                      future: translate('All Food'),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(snapshot.data!);
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
@@ -72,14 +115,24 @@ class StartScreen extends StatelessWidget {
                 const SizedBox(height: 30),
                 SizedBox(
                   width: 205,
-                  height: 62, 
+                  height: 62,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: const Color.fromARGB(255, 184, 60, 206),
                       textStyle: const TextStyle(fontSize: 20),
                     ),
-                    child: const Text('Random Meal'),
+                    child: FutureBuilder<String>(
+                      future: translate('Random Meal'),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(snapshot.data!);
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
                     onPressed: () async {
                       Meal randomMeal = await getRandomMeal();
                       Navigator.pushNamed(

@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_translate: ^0.0.6
+  translator: ^1.0.0
   http: ^1.2.1
   provider: ^6.1.2
 
