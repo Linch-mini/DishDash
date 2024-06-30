@@ -2,11 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'meal.dart';
+import '../meal.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'custom_appbar.dart';
-import 'notifiers/favorites_notifier.dart';
+import '../custom_appbar.dart';
+import '../notifiers/favorites_notifier.dart';
 
 class MealScreen extends ConsumerWidget {
   MealScreen({super.key});
@@ -35,11 +35,15 @@ class MealScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
     mealId = favoritesNotifier.getCurrentMealId();
-    // final isFavorite = ref.watch(favoriteMealsProvider).contains(mealId);
 
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Meal Detailes',
+      appBar: AppBar(
+        title: const Text(
+          'Meal Details',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20.0),
+        ),
+        centerTitle: true,
       ),
       body: Stack(
         children: <Widget>[
@@ -62,88 +66,91 @@ class MealScreen extends ConsumerWidget {
                       return const Center(child: CircularProgressIndicator());
                     } else if (mealSnapshot.hasError) {
                       return Center(
-                          child: Text('Error: ${mealSnapshot.error}'));
+                        child: Text(
+                          'Error: ${mealSnapshot.error}',
+                        ),
+                      );
                     } else if (mealSnapshot.hasData) {
                       return ListView(
                         children: <Widget>[
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              return Row(
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                mealSnapshot.data!.name,
+                                style: const TextStyle(
+                                  fontSize: 28.0,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0),
+                            child: Text(
+                              'Category: ${mealSnapshot.data!.category}',
+                              style: const TextStyle(
+                                fontSize: 22.0,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              'Area: ${mealSnapshot.data!.area}',
+                              style: const TextStyle(
+                                fontSize: 22.0,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Center(
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.95,
+                              child: Image.network(mealSnapshot.data!.imageUrl),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  SizedBox(
-                                    width: constraints.maxWidth / 2,
-                                    height: constraints.maxWidth / 2,
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Image.network(
-                                          mealSnapshot.data!.imageUrl),
+                                  const Text(
+                                    'Ingredients:',
+                                    style: TextStyle(
+                                      fontSize: 22.0,
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 3.0,
+                                  ...List.generate(
+                                    mealSnapshot.data!.ingredients.length,
+                                    (index) => Text(
+                                      '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}',
+                                      style: const TextStyle(
+                                        fontSize: 18.0,
                                       ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            mealSnapshot.data!.name,
-                                            style: const TextStyle(
-                                              fontSize: 28.0,
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              left: 30.0,
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  'Category: ${mealSnapshot.data!.category}',
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  'Area: ${mealSnapshot.data!.area}',
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  'Ingredients:',
-                                                  style: TextStyle(
-                                                    fontSize: 18.0,
-                                                  ),
-                                                ),
-                                                ...List.generate(
-                                                  mealSnapshot
-                                                      .data!.ingredients.length,
-                                                  (index) => Text(
-                                                    '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}',
-                                                    style: const TextStyle(
-                                                      fontSize: 14.0,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ],
-                              );
-                            },
+                              ),
+                            ),
                           ),
-                          const Text('Instructions:',
-                              style: TextStyle(fontSize: 24.0)),
-                          Text(mealSnapshot.data!.instructions),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Instructions:\n${mealSnapshot.data!.instructions}',
+                              style: const TextStyle(fontSize: 18.0),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ],
                       );
                     } else {
