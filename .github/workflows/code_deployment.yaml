@@ -23,7 +23,11 @@ jobs:
       - run: flutter build apk --release
         working-directory: ./dish_dash
 
-      - uses: actions/upload-artifact@v2
+      - run: |
+          mkdir ./apk
+          mv ./dish_dash/build/app/outputs/flutter-apk/app-release.apk ./apk/app-release.apk
+
+      - uses: peaceiris/actions-gh-pages@v3
         with:
-          name: app-release.apk
-          path: ./dish_dash/build/app/outputs/flutter-apk/app-release.apk
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apk
