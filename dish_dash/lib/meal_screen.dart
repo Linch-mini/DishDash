@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'meal.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'custom_appbar.dart';
+import 'background_painter.dart';
 
 class MealScreen extends StatefulWidget {
   const MealScreen({super.key});
@@ -53,120 +53,123 @@ class _MealScreenState extends State<MealScreen> {
         ),
         centerTitle: true,
       ),
-      body: Stack(
-        children: <Widget>[
-          FutureBuilder<Meal>(
-            future: _mealFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (snapshot.hasData) {
-                Meal meal = snapshot.data!;
-                return ListView(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
-                      child: Align(
-                        alignment: Alignment.center,
+      body: CustomPaint(
+        painter: BackgroundPainter(),
+        child: Stack(
+          children: <Widget>[
+            FutureBuilder<Meal>(
+              future: _mealFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (snapshot.hasData) {
+                  Meal meal = snapshot.data!;
+                  return ListView(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            meal.name,
+                            style: const TextStyle(
+                              fontSize: 28.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0), 
                         child: Text(
-                          meal.name,
+                          'Category: ${meal.category}',
                           style: const TextStyle(
-                            fontSize: 28.0,
+                            fontSize: 22.0,
                           ),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0), 
-                      child: Text(
-                        'Category: ${meal.category}',
-                        style: const TextStyle(
-                          fontSize: 22.0,
+                      Padding( 
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0), 
+                        child: Text(
+                          'Area: ${meal.area}',
+                          style: const TextStyle(
+                            fontSize: 22.0,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    Padding( 
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0), 
-                      child: Text(
-                        'Area: ${meal.area}',
-                        style: const TextStyle(
-                          fontSize: 22.0,
+                      const SizedBox(height: 10),
+                      Center(
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.95,
+                          child: Image.network(meal.imageUrl),
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Center(
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.95,
-                        child: Image.network(meal.imageUrl),
-                      ),
-                    ),
-                    
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center, 
-                          children: <Widget>[
-                            const Text(
-                              'Ingredients:',
-                              style: TextStyle(
-                                fontSize: 22.0,
-                              ),
-                              textAlign: TextAlign.center, 
-                            ),
-                            ...List.generate(
-                              meal.ingredients.length,
-                              (index) => Text(
-                                '${meal.ingredients[index]}: ${meal.measures[index]}',
-                                style: const TextStyle(
-                                  fontSize: 18.0,
+                      
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center, 
+                            children: <Widget>[
+                              const Text(
+                                'Ingredients:',
+                                style: TextStyle(
+                                  fontSize: 22.0,
                                 ),
                                 textAlign: TextAlign.center, 
                               ),
-                            ),
-                          ],
+                              ...List.generate(
+                                meal.ingredients.length,
+                                (index) => Text(
+                                  '${meal.ingredients[index]}: ${meal.measures[index]}',
+                                  style: const TextStyle(
+                                    fontSize: 18.0,
+                                  ),
+                                  textAlign: TextAlign.center, 
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Instructions:\n${meal.instructions}',
-                        style: const TextStyle(fontSize: 18.0),
-                        textAlign: TextAlign.center, 
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Instructions:\n${meal.instructions}',
+                          style: const TextStyle(fontSize: 18.0),
+                          textAlign: TextAlign.center, 
+                        ),
                       ),
-                    ),
-                    
-                  ],
-                );
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
-          Positioned(
-            top: 10.0,
-            right: 10.0,
-            child: FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  isFavorited = !isFavorited;
-                });
+                      
+                    ],
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
               },
-              child: Icon(
-                Icons.favorite,
-                color: isFavorited ? Colors.red : Colors.grey,
+            ),
+            Positioned(
+              top: 10.0,
+              right: 10.0,
+              child: FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    isFavorited = !isFavorited;
+                  });
+                },
+                child: Icon(
+                  Icons.favorite,
+                  color: isFavorited ? Colors.red : Colors.grey,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -23,6 +23,7 @@ class MainApp extends StatelessWidget {
             themeMode: themeProvider.themeMode,
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
+            debugShowCheckedModeBanner: false,
             initialRoute: "/",
             routes: {
               "/": (context) => const StartScreen(),
