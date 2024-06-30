@@ -17,17 +17,13 @@ jobs:
           channel: stable
           flutter-version: '3.22.2'
 
-      - run: flutter create -t app dish_dash_apk
-      - run: cp -r ./dish_dash/lib ./dish_dash_apk/lib
-      - run: cp ./dish_dash/pubspec.yaml ./dish_dash_apk/pubspec.yaml
-      - run: cp -r ./dish_dash/assets ./dish_dash_apk/assets
-
       - run: flutter pub get
-        working-directory: ./dish_dash_apk
+        working-directory: ./dish_dash
 
       - run: flutter build apk --release
-        working-directory: ./dish_dash_apk
-      - uses: actions/upload-artifact@v2
+        working-directory: ./dish_dash
+
+      - uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
-          path: ./dish_dash_apk/build/app/outputs/flutter-apk/app-release.apk
+          path: ./dish_dash/build/app/outputs/flutter-apk/app-release.apk
