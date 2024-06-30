@@ -28,6 +28,9 @@ jobs:
       - run: flutter pub get
         working-directory: ./dish_dash
 
+      - run: flutter clean
+        working-directory: ./dish_dash
+
       - run: flutter build apk --release
         working-directory: ./dish_dash
 
