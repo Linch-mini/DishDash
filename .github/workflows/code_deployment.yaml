@@ -18,7 +18,7 @@ jobs:
           flutter-version: '3.22.2'
 
       - name: Update Gradle version
-        run: echo "distributionUrl=https\://services.gradle.org/distributions/gradle-7.2-all.zip" > android/gradle/wrapper/gradle-wrapper.properties
+        run: echo "distributionUrl=https\://services.gradle.org/distributions/gradle-7.4-all.zip" > android/gradle/wrapper/gradle-wrapper.properties
         working-directory: ./dish_dash
 
       - name: Update Android Gradle plugin
@@ -26,9 +26,6 @@ jobs:
         working-directory: ./dish_dash
 
       - run: flutter pub get
-        working-directory: ./dish_dash
-
-      - run: flutter clean
         working-directory: ./dish_dash
 
       - run: flutter build apk --release
