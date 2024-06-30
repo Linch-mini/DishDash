@@ -2,9 +2,9 @@ name: Flutter Code Deployment
 
 on:
   push:
-    branches: [ feature-ci-cd ]
+    branches: [ feature-ci-cd, develop ]
   pull_request:
-    branches: [ feature-ci-cd ]
+    branches: [ feature-ci-cd, develop ]
 
 jobs:
   test:
@@ -17,13 +17,17 @@ jobs:
           channel: stable
           flutter-version: '3.22.2'
 
+      - run: flutter create -t app dish_dash_apk
+      - run: cp -r ./dish_dash/lib ./dish_dash_apk/lib
+      - run: cp ./dish_dash/pubspec.yaml ./dish_dash_apk/pubspec.yaml
+      - run: cp -r ./dish_dash/assets ./dish_dash_apk/assets
+
       - run: flutter pub get
-        working-directory: ./dish_dash
+        working-directory: ./dish_dash_apk
 
-      - run: flutter build web --release -t lib/main.dart
-        working-directory: ./dish_dash
-
-      - uses: bluefireteam/flutter-gh-pages@v7
+      - run: flutter build apk --release
+        working-directory: ./dish_dash_apk
+      - uses: actions/upload-artifact@v2
         with:
-          customArgs: lib/main.dart
-          workingDir: ./dish_dash
+          name: app-release.apk
+          path: ./dish_dash_apk/build/app/outputs/flutter-apk/app-release.apk
