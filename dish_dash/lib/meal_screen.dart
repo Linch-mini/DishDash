@@ -2,11 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../meal.dart';
+import 'meal.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../custom_appbar.dart';
-import '../notifiers/favorites_notifier.dart';
+import 'notifiers/favorites_notifier.dart';
 
 class MealScreen extends ConsumerWidget {
   MealScreen({super.key});
