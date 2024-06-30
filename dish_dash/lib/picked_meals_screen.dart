@@ -1,26 +1,18 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'meal.dart';
 import 'custom_appbar.dart';
+import 'notifiers/favorites_notifier.dart';
 
-class PickedMealsScreen extends StatefulWidget {
-  const PickedMealsScreen({super.key});
+class PickedMealsScreen extends ConsumerWidget {
+  PickedMealsScreen({super.key});
 
-  @override
-  _PickedMealsScreenState createState() => _PickedMealsScreenState();
-}
-
-class _PickedMealsScreenState extends State<PickedMealsScreen> {
   late Future<List<Meal>> _pickedMealsFuture;
   late String category;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   Future<List<Meal>> getPickedMeals(String category) async {
     final response = await http.get(Uri.parse(
@@ -47,7 +39,7 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
     category = arguments['category'];
     _pickedMealsFuture = getPickedMeals(category);
@@ -76,6 +68,10 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
                 return Card(
                   child: InkWell(
                     onTap: () {
+                      final favoritesNotifier =
+                          ref.read(favoriteMealsProvider.notifier);
+                      favoritesNotifier
+                          .saveCurrentMealId(int.parse(meals[index].id));
                       Navigator.pushNamed(
                         context,
                         '/meal_card',
