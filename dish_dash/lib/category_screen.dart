@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'custom_appbar.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key});
@@ -37,12 +36,19 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Categories',
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Categories',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20.0),
       ),
-      body: FutureBuilder<List<String>>(
+      centerTitle: true,
+    ),
+    
+    body: CustomPaint(
+      painter: BackgroundPainter(),
+      child: FutureBuilder<List<String>>(
         future: _categoriesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -99,6 +105,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
           }
         },
       ),
-    );
+    ),
+  );
+}
+}
+class BackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..shader = LinearGradient(
+        colors: [Colors.white, Colors.purple.shade100],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }

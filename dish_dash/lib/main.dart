@@ -20,6 +20,7 @@ class MainApp extends ConsumerWidget {
       themeMode: themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
       initialRoute: "/",
       routes: {
         "/": (context) => const StartScreen(),

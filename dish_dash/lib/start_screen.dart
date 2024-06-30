@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -6,99 +6,159 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'custom_appbar.dart';
 import 'meal.dart';
 import 'package:http/http.dart' as http;
-
+import 'background_painter.dart';
 import 'notifiers/favorites_notifier.dart';
 
-class StartScreen extends ConsumerWidget {
+class StartScreen extends ConsumerStatefulWidget {
   const StartScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _StartScreenState createState() => _StartScreenState();
+}
+
+class _StartScreenState extends ConsumerState<StartScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutQuad,
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Dish Dash',
-          style: TextStyle(fontSize: 24, color: Colors.black),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: const CustomAppBar(
+        title: 'Dish Dash',
       ),
-      body: Column(
-        children: <Widget>[
-          const SizedBox(height: 60),
-          Center(
-            child: Image.asset(
-              'assets/images/Chef.png',
-              height: 300,
-              fit: BoxFit.contain,
-            ),
+      body: Stack(
+        children: [
+          CustomPaint(
+            size: const Size(double.infinity, double.infinity),
+            painter: BackgroundPainter(),
           ),
-          const SizedBox(height: 60),
-          Center(
+          Positioned.fill(
             child: Column(
               children: <Widget>[
-                SizedBox(
-                  width: 205,
-                  height: 62, 
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color.fromARGB(255, 184, 60, 206),
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    child: const Text('Favourites'),
-                    onPressed: () {
-                      // Navigate to Favourites Screen
-                    },
-                  ),
+                const SizedBox(height: 60),
+                AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) {
+                    double offset = 300 * (1 - _animation.value);
+                    double opacity = _animation.value;
+                    return Transform.translate(
+                      offset: Offset(0, offset),
+                      child: Opacity(
+                        opacity: opacity,
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/Chef.png',
+                            height: 300,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: 205,
-                  height: 62, 
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color.fromARGB(255, 184, 60, 206),
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    child: const Text('All Food'),
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/categories',
-                      );
-                    },
-                  ),
+                const SizedBox(height: 60),
+                AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) {
+                    double offset = 300 * (1 - _animation.value);
+                    double opacity = _animation.value;
+                    return Transform.translate(
+                      offset: Offset(0, offset),
+                      child: Opacity(
+                        opacity: opacity,
+                        child: Center(
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(
+                                width: 205,
+                                height: 62,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                                    textStyle: const TextStyle(fontSize: 20),
+                                  ),
+                                  child: const Text('Favourites'),
+                                  onPressed: () {
+                                    // Navigate to Favourites Screen
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              SizedBox(
+                                width: 205,
+                                height: 62,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                                    textStyle: const TextStyle(fontSize: 20),
+                                  ),
+                                  child: const Text('All Food'),
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/categories',
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              SizedBox(
+                                width: 205,
+                                height: 62,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                                    textStyle: const TextStyle(fontSize: 20),
+                                  ),
+                                  child: const Text('Random Meal'),
+                                  onPressed: () async {
+                                    Meal randomMeal = await getRandomMeal();
+                                    final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
+                                    favoritesNotifier.saveCurrentMealId(int.parse(randomMeal.id));
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/meal_card',
+                                      arguments: {'mealId': int.parse(randomMeal.id)},
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: 205,
-                  height: 62, 
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color.fromARGB(255, 184, 60, 206),
-                      textStyle: const TextStyle(fontSize: 20),
-                    ),
-                    child: const Text('Random Meal'),
-                    onPressed: () async {
-                      Meal randomMeal = await getRandomMeal();
-                      final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
-                      favoritesNotifier.saveCurrentMealId(int.parse(randomMeal.id));
-                      Navigator.pushNamed(
-                        context,
-                        '/meal_card',
-                        arguments: {'mealId': int.parse(randomMeal.id)},
-                      );
-                    },
-                  ),
-                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
-          const SizedBox(height: 20),
         ],
       ),
     );
