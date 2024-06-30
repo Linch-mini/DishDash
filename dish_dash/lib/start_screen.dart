@@ -12,41 +12,89 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Dish Dash',
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              child: const Text('Favourites'),
-              onPressed: () {
-                // Navigate to Favourites Screen
-              },
-            ),
-            ElevatedButton(
-              child: const Text('All Food'),
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  '/categories',
-                );
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Random Meal'),
-              onPressed: () async {
-                Meal randomMeal = await getRandomMeal();
-                Navigator.pushNamed(
-                  context,
-                  '/meal_card',
-                  arguments: {'mealId': int.parse(randomMeal.id)},
-                );
-              },
-            ),
-          ],
+      appBar: AppBar(
+        title: const Text(
+          'Dish Dash',
+          style: TextStyle(fontSize: 24, color: Colors.black),
         ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Column(
+        children: <Widget>[
+          const SizedBox(height: 60),
+          Center(
+            child: Image.asset(
+              'assets/images/Chef.png',
+              height: 300,
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(height: 60),
+          Center(
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  width: 205,
+                  height: 62, 
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                      textStyle: const TextStyle(fontSize: 20),
+                    ),
+                    child: const Text('Favourites'),
+                    onPressed: () {
+                      // Navigate to Favourites Screen
+                    },
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: 205,
+                  height: 62, 
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                      textStyle: const TextStyle(fontSize: 20),
+                    ),
+                    child: const Text('All Food'),
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/categories',
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: 205,
+                  height: 62, 
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                      textStyle: const TextStyle(fontSize: 20),
+                    ),
+                    child: const Text('Random Meal'),
+                    onPressed: () async {
+                      Meal randomMeal = await getRandomMeal();
+                      Navigator.pushNamed(
+                        context,
+                        '/meal_card',
+                        arguments: {'mealId': int.parse(randomMeal.id)},
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }

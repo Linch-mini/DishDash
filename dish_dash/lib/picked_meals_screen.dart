@@ -67,7 +67,7 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
             List<Meal> meals = snapshot.data!;
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                crossAxisCount: 2,
                 crossAxisSpacing: 2,
                 mainAxisSpacing: 2,
               ),
@@ -83,19 +83,24 @@ class _PickedMealsScreenState extends State<PickedMealsScreen> {
                       );
                     },
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        SizedBox(
-                          width: 150.0,
-                          height: 150.0,
-                          child: Image.network(meals[index].imageUrl),
+                        const SizedBox(height: 5),
+                        FractionallySizedBox(
+                          widthFactor: 0.7, 
+                          child: Image.network(meals[index].imageUrl,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
                               child: Text(
-                                meals[index].name,
-                                style: const TextStyle(fontSize: 20.0),
+                                meals[index].name.split(" ").length > 4
+                                  ? "${meals[index].name.split(" ").take(4).join(" ")}..."
+                                  : meals[index].name,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
