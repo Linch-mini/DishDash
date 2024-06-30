@@ -11,8 +11,7 @@ import 'notifiers/favorites_notifier.dart';
 class MealScreen extends ConsumerWidget {
   MealScreen({super.key});
 
-  late Future<Meal> _mealFuture;
-  bool isFavorited = false;
+  late bool isFavorited;
   late Future<int> mealId;
 
   Future<Meal> getMeal(int id) async {
@@ -36,7 +35,7 @@ class MealScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
     mealId = favoritesNotifier.getCurrentMealId();
-    final isFavorite = ref.watch(favoriteMealsProvider).contains(mealId);
+    // final isFavorite = ref.watch(favoriteMealsProvider).contains(mealId);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -52,7 +51,7 @@ class MealScreen extends ConsumerWidget {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.hasData) {
-                final isFavorited =
+                isFavorited =
                     ref.watch(favoriteMealsProvider).contains(snapshot.data);
 
                 return FutureBuilder<Meal>(
@@ -165,7 +164,7 @@ class MealScreen extends ConsumerWidget {
                 right: 10.0,
                 child: FloatingActionButton(
                   onPressed: () {
-                    if (isFavorite) {
+                    if (isFavorited) {
                       favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
                     } else {
                       favoritesNotifier.addFavorite(mealIdSnapshot.data!);
