@@ -2,9 +2,9 @@ name: Flutter Code Deployment
 
 on:
   push:
-    branches: [ feature-ci-cd ]
+    branches: [ feature-ci-cd, develop ]
   pull_request:
-    branches: [ feature-ci-cd ]
+    branches: [ feature-ci-cd, develop ]
 
 jobs:
   test:
