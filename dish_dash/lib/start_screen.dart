@@ -2,15 +2,18 @@
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'custom_appbar.dart';
 import 'meal.dart';
 import 'package:http/http.dart' as http;
 
-class StartScreen extends StatelessWidget {
+import 'notifiers/favorites_notifier.dart';
+
+class StartScreen extends ConsumerWidget {
   const StartScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: const CustomAppBar(
         title: 'Dish Dash',
@@ -38,6 +41,8 @@ class StartScreen extends StatelessWidget {
               child: const Text('Random Meal'),
               onPressed: () async {
                 Meal randomMeal = await getRandomMeal();
+                final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
+                favoritesNotifier.saveCurrentMealId(int.parse(randomMeal.id));
                 Navigator.pushNamed(
                   context,
                   '/meal_card',

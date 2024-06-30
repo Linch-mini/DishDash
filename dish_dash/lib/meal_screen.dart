@@ -1,25 +1,19 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'meal.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'custom_appbar.dart';
+import 'notifiers/favorites_notifier.dart';
 
-class MealScreen extends StatefulWidget {
-  const MealScreen({super.key});
+class MealScreen extends ConsumerWidget {
+  MealScreen({super.key});
 
-  @override
-  _MealScreenState createState() => _MealScreenState();
-}
-
-class _MealScreenState extends State<MealScreen> {
   late Future<Meal> _mealFuture;
   bool isFavorited = false;
-  late int mealId;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  late Future<int> mealId;
 
   Future<Meal> getMeal(int id) async {
     final response = await http.get(
@@ -39,10 +33,10 @@ class _MealScreenState extends State<MealScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
-    mealId = arguments['mealId'];
-    _mealFuture = getMeal(mealId);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
+    mealId = favoritesNotifier.getCurrentMealId();
+    final isFavorite = ref.watch(favoriteMealsProvider).contains(mealId);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -50,113 +44,140 @@ class _MealScreenState extends State<MealScreen> {
       ),
       body: Stack(
         children: <Widget>[
-          FutureBuilder<Meal>(
-            future: _mealFuture,
+          FutureBuilder<int>(
+            future: mealId,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (snapshot.hasData) {
-                Meal meal = snapshot.data!;
-                return ListView(
-                  children: <Widget>[
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: constraints.maxWidth / 2,
-                              height: constraints.maxWidth / 2,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Image.network(meal.imageUrl),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 3.0,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      meal.name,
-                                      style: const TextStyle(
-                                        fontSize: 28.0,
-                                      ),
+                final isFavorited =
+                    ref.watch(favoriteMealsProvider).contains(snapshot.data);
+
+                return FutureBuilder<Meal>(
+                  future: getMeal(snapshot.data!),
+                  builder: (context, mealSnapshot) {
+                    if (mealSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (mealSnapshot.hasError) {
+                      return Center(
+                          child: Text('Error: ${mealSnapshot.error}'));
+                    } else if (mealSnapshot.hasData) {
+                      return ListView(
+                        children: <Widget>[
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              return Row(
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: constraints.maxWidth / 2,
+                                    height: constraints.maxWidth / 2,
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Image.network(
+                                          mealSnapshot.data!.imageUrl),
                                     ),
-                                    Padding(
+                                  ),
+                                  Expanded(
+                                    child: Padding(
                                       padding: const EdgeInsets.only(
-                                        left: 30.0,
+                                        left: 3.0,
                                       ),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            'Category: ${meal.category}',
+                                            mealSnapshot.data!.name,
                                             style: const TextStyle(
-                                              fontSize: 18.0,
+                                              fontSize: 28.0,
                                             ),
                                           ),
-                                          Text(
-                                            'Area: ${meal.area}',
-                                            style: const TextStyle(
-                                              fontSize: 18.0,
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 30.0,
                                             ),
-                                          ),
-                                          const Text(
-                                            'Ingredients:',
-                                            style: TextStyle(
-                                              fontSize: 18.0,
-                                            ),
-                                          ),
-                                          ...List.generate(
-                                            meal.ingredients.length,
-                                            (index) => Text(
-                                              '${meal.ingredients[index]}: ${meal.measures[index]}',
-                                              style: const TextStyle(
-                                                fontSize: 14.0,
-                                              ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  'Category: ${mealSnapshot.data!.category}',
+                                                  style: const TextStyle(
+                                                    fontSize: 18.0,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'Area: ${mealSnapshot.data!.area}',
+                                                  style: const TextStyle(
+                                                    fontSize: 18.0,
+                                                  ),
+                                                ),
+                                                const Text(
+                                                  'Ingredients:',
+                                                  style: TextStyle(
+                                                    fontSize: 18.0,
+                                                  ),
+                                                ),
+                                                ...List.generate(
+                                                  mealSnapshot
+                                                      .data!.ingredients.length,
+                                                  (index) => Text(
+                                                    '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14.0,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    const Text('Instructions:',
-                        style: TextStyle(fontSize: 24.0)),
-                    Text(meal.instructions),
-                  ],
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                          const Text('Instructions:',
+                              style: TextStyle(fontSize: 24.0)),
+                          Text(mealSnapshot.data!.instructions),
+                        ],
+                      );
+                    } else {
+                      return const Center(child: Text('No meal data found'));
+                    }
+                  },
                 );
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
             },
           ),
-          Positioned(
-            top: 10.0,
-            right: 10.0,
-            child: FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  isFavorited = !isFavorited;
-                });
-              },
-              child: Icon(
-                Icons.favorite,
-                color: isFavorited ? Colors.red : Colors.grey,
-              ),
-            ),
+          FutureBuilder(
+            future: favoritesNotifier.getCurrentMealId(),
+            builder: (context, mealIdSnapshot) {
+              return Positioned(
+                top: 10.0,
+                right: 10.0,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    if (isFavorite) {
+                      favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
+                    } else {
+                      favoritesNotifier.addFavorite(mealIdSnapshot.data!);
+                    }
+                  },
+                  child: Icon(
+                    Icons.favorite,
+                    color: isFavorited ? Colors.red : Colors.grey,
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
