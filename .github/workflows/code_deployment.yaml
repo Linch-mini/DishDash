@@ -26,7 +26,6 @@ jobs:
       - run: |
           mkdir ./apk
           mv ./dish_dash/build/app/outputs/flutter-apk/app-release.apk ./apk/app-release.apk
-
       - uses: actions/upload-artifact@v2
         with:
           name: app-release.apk
