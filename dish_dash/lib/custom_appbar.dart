@@ -1,34 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'custom_theme.dart';
 
-class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
+class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
-
   const CustomAppBar({super.key, required this.title});
 
   @override
-  _CustomAppBarState createState() => _CustomAppBarState();
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
-
-class _CustomAppBarState extends State<CustomAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
     return AppBar(
       backgroundColor: Colors.transparent,
-      title: Text(widget.title),
+      title: Text(title),
       actions: <Widget>[
         Switch.adaptive(
-          value: themeProvider.isDarkMode(context),
+          value: themeMode == ThemeMode.dark,
           onChanged: (value) {
-            themeProvider.toggleTheme(value);
+            ref.read(themeProvider.notifier).toggleTheme(value);
           },
         ),
       ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

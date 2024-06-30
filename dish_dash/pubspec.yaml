@@ -11,8 +11,10 @@ dependencies:
     sdk: flutter
   google_translate: ^0.0.6
   translator: ^1.0.0
+  flutter_riverpod: ^2.5.1
   http: ^1.2.1
   provider: ^6.1.2
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
