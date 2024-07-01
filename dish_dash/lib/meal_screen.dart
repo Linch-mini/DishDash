@@ -1,10 +1,9 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:dish_dash/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'meal.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'notifiers/favorites_notifier.dart';
 import 'background_painter.dart';
 import 'package:translator/translator.dart';
@@ -14,28 +13,12 @@ class MealScreen extends ConsumerWidget {
 
   late bool isFavorited;
   late Future<int> mealId;
+
   final translator = GoogleTranslator();
 
   Future<String> translate(String input) async {
     var translation = await translator.translate(input, from: 'en', to: 'ru');
     return translation.text;
-  }
-
-  Future<Meal> getMeal(int id) async {
-    final response = await http.get(
-        Uri.parse('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$id'));
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['meals'] != null && jsonResponse['meals'].isNotEmpty) {
-        Map<String, dynamic> mealData = jsonResponse['meals'][0];
-        return Meal.fromJson(mealData);
-      } else {
-        throw Exception('No meal data found');
-      }
-    } else {
-      throw Exception('Failed to load meal');
-    }
   }
 
   @override
@@ -58,7 +41,7 @@ class MealScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: CustomPaint(
-        painter: BackgroundPainter(),
+        painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
         child: Stack(
           children: <Widget>[
             FutureBuilder<int>(
@@ -73,7 +56,7 @@ class MealScreen extends ConsumerWidget {
                       ref.watch(favoriteMealsProvider).contains(snapshot.data);
 
                   return FutureBuilder<Meal>(
-                    future: getMeal(snapshot.data!),
+                    future: favoritesNotifier.getMeal(snapshot.data!),
                     builder: (context, mealSnapshot) {
                       if (mealSnapshot.connectionState ==
                           ConnectionState.waiting) {
@@ -180,21 +163,10 @@ class MealScreen extends ConsumerWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: FutureBuilder<String>(
-                                future: translate(
-                                    'Instructions:\n${mealSnapshot.data!.instructions}'),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<String> snapshot) {
-                                  if (snapshot.hasData) {
-                                    return Text(
-                                      snapshot.data!,
-                                      style: const TextStyle(fontSize: 18.0),
-                                      textAlign: TextAlign.center,
-                                    );
-                                  } else {
-                                    return const CircularProgressIndicator();
-                                  }
-                                },
+                              child: Text(
+                                'Instructions:\n${mealSnapshot.data!.instructions}',
+                                style: const TextStyle(fontSize: 18.0),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ],

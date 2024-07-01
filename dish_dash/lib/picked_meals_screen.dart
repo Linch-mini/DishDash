@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, must_be_immutable
 
+import 'package:dish_dash/custom_theme.dart';
+import 'package:dish_dash/notifiers/category_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
@@ -18,7 +20,7 @@ class PickedMealsScreen extends ConsumerWidget {
 
   Future<String> translate(String input) async {
     var translation = await translator.translate(input,
-        from: 'en', to: 'ru'); // replace 'ru' with your desired language
+        from: 'en', to: 'ru');
     return translation.text;
   }
 
@@ -48,8 +50,9 @@ class PickedMealsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
-    category = arguments['category'];
+    // final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
+    // category = arguments['category'];
+    category = ref.read(categoryProvider);
     _pickedMealsFuture = getPickedMeals(category);
 
     return Scaffold(
@@ -67,7 +70,7 @@ class PickedMealsScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: CustomPaint(
-        painter: BackgroundPainter(),
+        painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
         child: FutureBuilder<List<Meal>>(
           future: _pickedMealsFuture,
           builder: (context, snapshot) {

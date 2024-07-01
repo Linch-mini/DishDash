@@ -1,18 +1,22 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'package:dish_dash/custom_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:translator/translator.dart';
+import 'background_painter.dart';
+import 'notifiers/category_notifier.dart';
 
-class CategoryScreen extends StatefulWidget {
+class CategoryScreen extends ConsumerStatefulWidget {
   const CategoryScreen({super.key});
 
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
+class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   late Future<List<String>> _categoriesFuture;
   final translator = GoogleTranslator();
 
@@ -60,7 +64,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         centerTitle: true,
       ),
       body: CustomPaint(
-        painter: BackgroundPainter(),
+        painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
         child: FutureBuilder<List<String>>(
           future: _categoriesFuture,
           builder: (context, snapshot) {
@@ -80,10 +84,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   return Card(
                     child: InkWell(
                       onTap: () {
+                        ref.read(categoryProvider.notifier).updateCategory(snapshot.data![index]);
                         Navigator.pushNamed(
                           context,
                           '/meals',
-                          arguments: {'category': snapshot.data![index]},
                         );
                       },
                       child: Column(
@@ -125,23 +129,5 @@ class _CategoryScreenState extends State<CategoryScreen> {
         ),
       ),
     );
-  }
-}
-
-class BackgroundPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..shader = LinearGradient(
-        colors: [Colors.white, Colors.purple.shade100],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }

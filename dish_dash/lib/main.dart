@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'custom_theme.dart';
+import 'favorites_screen.dart';
 import 'start_screen.dart';
 import 'category_screen.dart';
 import 'meal_screen.dart';
 import 'picked_meals_screen.dart';
-import 'start_screen.dart';
-import 'custom_theme.dart';
 
 void main() {
   runApp(const ProviderScope(child: MainApp()));
@@ -29,6 +28,7 @@ class MainApp extends ConsumerWidget {
         "/categories": (context) => const CategoryScreen(),
         "/meals": (context) => PickedMealsScreen(),
         "/meal_card": (context) => MealScreen(),
+        "/favorites": (context) => const FavoritesScreen(),
       },
     );
   }
