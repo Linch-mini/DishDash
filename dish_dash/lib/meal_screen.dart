@@ -7,12 +7,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'notifiers/favorites_notifier.dart';
 import 'background_painter.dart';
+import 'package:translator/translator.dart';
 
 class MealScreen extends ConsumerWidget {
   MealScreen({super.key});
 
   late bool isFavorited;
   late Future<int> mealId;
+  final translator = GoogleTranslator();
+
+  Future<String> translate(String input) async {
+    var translation = await translator.translate(input, from: 'en', to: 'ru');
+    return translation.text;
+  }
 
   Future<Meal> getMeal(int id) async {
     final response = await http.get(
@@ -38,10 +45,15 @@ class MealScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Meal Details',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20.0),
+        title: FutureBuilder<String>(
+          future: translate('Meal Details'),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData) {
+              return Text(snapshot.data!);
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
         ),
         centerTitle: true,
       ),
@@ -80,12 +92,22 @@ class MealScreen extends ConsumerWidget {
                                   const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
                               child: Align(
                                 alignment: Alignment.center,
-                                child: Text(
-                                  mealSnapshot.data!.name,
-                                  style: const TextStyle(
-                                    fontSize: 28.0,
-                                  ),
-                                  textAlign: TextAlign.center,
+                                child: FutureBuilder<String>(
+                                  future: translate(mealSnapshot.data!.name),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(
+                                          fontSize: 28.0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  },
                                 ),
                               ),
                             ),
@@ -115,7 +137,8 @@ class MealScreen extends ConsumerWidget {
                             Center(
                               child: SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.95,
-                                child: Image.network(mealSnapshot.data!.imageUrl),
+                                child:
+                                    Image.network(mealSnapshot.data!.imageUrl),
                               ),
                             ),
                             Padding(
@@ -133,12 +156,22 @@ class MealScreen extends ConsumerWidget {
                                     ),
                                     ...List.generate(
                                       mealSnapshot.data!.ingredients.length,
-                                      (index) => Text(
-                                        '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}',
-                                        style: const TextStyle(
-                                          fontSize: 18.0,
-                                        ),
-                                        textAlign: TextAlign.center,
+                                      (index) => FutureBuilder<String>(
+                                        future: translate(
+                                            '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}'),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data!,
+                                              style: const TextStyle(
+                                                  fontSize: 18.0),
+                                              textAlign: TextAlign.center,
+                                            );
+                                          } else {
+                                            return const CircularProgressIndicator();
+                                          }
+                                        },
                                       ),
                                     ),
                                   ],
@@ -147,10 +180,21 @@ class MealScreen extends ConsumerWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Instructions:\n${mealSnapshot.data!.instructions}',
-                                style: const TextStyle(fontSize: 18.0),
-                                textAlign: TextAlign.center,
+                              child: FutureBuilder<String>(
+                                future: translate(
+                                    'Instructions:\n${mealSnapshot.data!.instructions}'),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<String> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Text(
+                                      snapshot.data!,
+                                      style: const TextStyle(fontSize: 18.0),
+                                      textAlign: TextAlign.center,
+                                    );
+                                  } else {
+                                    return const CircularProgressIndicator();
+                                  }
+                                },
                               ),
                             ),
                           ],
@@ -166,27 +210,27 @@ class MealScreen extends ConsumerWidget {
               },
             ),
             FutureBuilder(
-            future: favoritesNotifier.getCurrentMealId(),
-            builder: (context, mealIdSnapshot) {
-              return Positioned(
-                top: 10.0,
-                right: 10.0,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    if (isFavorited) {
-                      favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
-                    } else {
-                      favoritesNotifier.addFavorite(mealIdSnapshot.data!);
-                    }
-                  },
-                  child: Icon(
-                    Icons.favorite,
-                    color: isFavorited ? Colors.red : Colors.grey,
+              future: favoritesNotifier.getCurrentMealId(),
+              builder: (context, mealIdSnapshot) {
+                return Positioned(
+                  top: 10.0,
+                  right: 10.0,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      if (isFavorited) {
+                        favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
+                      } else {
+                        favoritesNotifier.addFavorite(mealIdSnapshot.data!);
+                      }
+                    },
+                    child: Icon(
+                      Icons.favorite,
+                      color: isFavorited ? Colors.red : Colors.grey,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
           ],
         ),
       ),

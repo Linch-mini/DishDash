@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'background_painter.dart';
 import 'notifiers/favorites_notifier.dart';
+import 'notifiers/language_notifier.dart';
 
 class StartScreen extends ConsumerStatefulWidget {
   const StartScreen({super.key});
@@ -18,28 +19,20 @@ class StartScreen extends ConsumerStatefulWidget {
   _StartScreenState createState() => _StartScreenState();
 }
 
-class _StartScreenState extends State<StartScreen> {
+class _StartScreenState extends ConsumerState<StartScreen>
+    with SingleTickerProviderStateMixin {
   final translator = GoogleTranslator();
-  String currentLanguage = 'en';
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   Future<String> translate(String input) async {
-    var translation = await translator.translate(input, from: 'en', to: currentLanguage);
+    var translation = await translator.translate(input,
+        from: 'en', to: ref.watch(languageProvider));
     return translation.text;
-  }
-
-  void changeLanguage() {
-    setState(() {
-      currentLanguage = currentLanguage == 'en' ? 'ru' : 'en';
-    });
   }
 
   @override
   _StartScreenState createState() => _StartScreenState();
-}
-
-class _StartScreenState extends ConsumerState<StartScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -66,8 +59,10 @@ class _StartScreenState extends ConsumerState<StartScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         title: 'Dish Dash',
+        changeLanguageCallback:
+            ref.read(languageProvider.notifier).toggleLanguage,
       ),
       body: Stack(
         children: [
@@ -118,10 +113,21 @@ class _StartScreenState extends ConsumerState<StartScreen> with SingleTickerProv
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 184, 60, 206),
                                     textStyle: const TextStyle(fontSize: 20),
                                   ),
-                                  child: const Text('Favourites'),
+                                  child: FutureBuilder<String>(
+                                    future: translate('Favourites'),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<String> snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(snapshot.data!);
+                                      } else {
+                                        return const CircularProgressIndicator();
+                                      }
+                                    },
+                                  ),
                                   onPressed: () {
                                     // Navigate to Favourites Screen
                                   },
@@ -134,10 +140,21 @@ class _StartScreenState extends ConsumerState<StartScreen> with SingleTickerProv
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 184, 60, 206),
                                     textStyle: const TextStyle(fontSize: 20),
                                   ),
-                                  child: const Text('All Food'),
+                                  child: FutureBuilder<String>(
+                                    future: translate('All Recipes'),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<String> snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(snapshot.data!);
+                                      } else {
+                                        return const CircularProgressIndicator();
+                                      }
+                                    },
+                                  ),
                                   onPressed: () {
                                     Navigator.pushNamed(
                                       context,
@@ -153,18 +170,33 @@ class _StartScreenState extends ConsumerState<StartScreen> with SingleTickerProv
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: const Color.fromARGB(255, 184, 60, 206),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 184, 60, 206),
                                     textStyle: const TextStyle(fontSize: 20),
                                   ),
-                                  child: const Text('Random Meal'),
+                                  child: FutureBuilder<String>(
+                                    future: translate('Random Recipe'),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<String> snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Text(snapshot.data!);
+                                      } else {
+                                        return const CircularProgressIndicator();
+                                      }
+                                    },
+                                  ),
                                   onPressed: () async {
                                     Meal randomMeal = await getRandomMeal();
-                                    final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
-                                    favoritesNotifier.saveCurrentMealId(int.parse(randomMeal.id));
+                                    final favoritesNotifier = ref
+                                        .read(favoriteMealsProvider.notifier);
+                                    favoritesNotifier.saveCurrentMealId(
+                                        int.parse(randomMeal.id));
                                     Navigator.pushNamed(
                                       context,
                                       '/meal_card',
-                                      arguments: {'mealId': int.parse(randomMeal.id)},
+                                      arguments: {
+                                        'mealId': int.parse(randomMeal.id)
+                                      },
                                     );
                                   },
                                 ),
