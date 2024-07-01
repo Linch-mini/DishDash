@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, library_private_types_in_public_api
 
 import 'package:dish_dash/custom_theme.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +8,16 @@ import 'notifiers/favorites_notifier.dart';
 import 'background_painter.dart';
 import 'package:translator/translator.dart';
 
-class MealScreen extends ConsumerWidget {
-  MealScreen({super.key});
+import 'notifiers/language_notifier.dart';
+
+class MealScreen extends ConsumerStatefulWidget {
+  const MealScreen({super.key});
+
+  @override
+  _MealScreenState createState() => _MealScreenState();
+}
+
+class _MealScreenState extends ConsumerState<MealScreen> {
 
   late bool isFavorited;
   late Future<int> mealId;
@@ -17,12 +25,16 @@ class MealScreen extends ConsumerWidget {
   final translator = GoogleTranslator();
 
   Future<String> translate(String input) async {
-    var translation = await translator.translate(input, from: 'en', to: 'ru');
+    var translation = await translator.translate(
+      input,
+      from: 'en',
+      to: ref.watch(languageProvider),
+    );
     return translation.text;
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
     mealId = favoritesNotifier.getCurrentMealId();
 
@@ -39,30 +51,30 @@ class MealScreen extends ConsumerWidget {
           },
         ),
         centerTitle: true,
-      actions: <Widget>[
-        FutureBuilder(
-          future: favoritesNotifier.getCurrentMealId(),
-          builder: (context, mealIdSnapshot) {
-            if (mealIdSnapshot.connectionState == ConnectionState.done) {
-              return IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: isFavorited ? Colors.red : Colors.grey,
-                ),
-                onPressed: () {
-                  if (isFavorited) {
-                    favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
-                  } else {
-                    favoritesNotifier.addFavorite(mealIdSnapshot.data!);
-                  }
-                },
-              );
-            } else {
-              return Container();
-            }
-          },
-        ),
-      ],
+        actions: <Widget>[
+          FutureBuilder(
+            future: favoritesNotifier.getCurrentMealId(),
+            builder: (context, mealIdSnapshot) {
+              if (mealIdSnapshot.connectionState == ConnectionState.done) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.favorite,
+                    color: isFavorited ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: () {
+                    if (isFavorited) {
+                      favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
+                    } else {
+                      favoritesNotifier.addFavorite(mealIdSnapshot.data!);
+                    }
+                  },
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
+        ],
       ),
       body: CustomPaint(
         painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
@@ -121,24 +133,44 @@ class MealScreen extends ConsumerWidget {
                             Padding(
                               padding:
                                   const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0),
-                              child: Text(
-                                'Category: ${mealSnapshot.data!.category}',
-                                style: const TextStyle(
-                                  fontSize: 22.0,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                              child: FutureBuilder<String>(
+                                  future: translate(
+                                      'Category: ${mealSnapshot.data!.category}'),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(
+                                          fontSize: 22.0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  }),
                             ),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                'Area: ${mealSnapshot.data!.area}',
-                                style: const TextStyle(
-                                  fontSize: 22.0,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                              child: FutureBuilder<String>(
+                                  future: translate(
+                                      'Area: ${mealSnapshot.data!.area}'),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(
+                                          fontSize: 22.0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  }),
                             ),
                             const SizedBox(height: 10),
                             Center(
@@ -154,13 +186,22 @@ class MealScreen extends ConsumerWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
-                                    const Text(
-                                      'Ingredients:',
-                                      style: TextStyle(
-                                        fontSize: 22.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
+                                    FutureBuilder<String>(
+                                        future: translate('Ingredients:'),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data!,
+                                              style: const TextStyle(
+                                                fontSize: 22.0,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            );
+                                          } else {
+                                            return const CircularProgressIndicator();
+                                          }
+                                        }),
                                     ...List.generate(
                                       mealSnapshot.data!.ingredients.length,
                                       (index) => FutureBuilder<String>(
@@ -187,11 +228,21 @@ class MealScreen extends ConsumerWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Instructions:\n${mealSnapshot.data!.instructions}',
-                                style: const TextStyle(fontSize: 18.0),
-                                textAlign: TextAlign.center,
-                              ),
+                              child: FutureBuilder<String>(
+                                  future: translate(
+                                      'Instructions:\n${mealSnapshot.data!.instructions}'),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(fontSize: 18.0),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  }),
                             ),
                           ],
                         );

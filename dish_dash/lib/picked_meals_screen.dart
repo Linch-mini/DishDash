@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, must_be_immutable
 
+import 'package:dish_dash/category_screen.dart';
 import 'package:dish_dash/custom_theme.dart';
 import 'package:dish_dash/notifiers/category_notifier.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +12,16 @@ import 'notifiers/favorites_notifier.dart';
 import 'background_painter.dart';
 import 'package:translator/translator.dart';
 
-class PickedMealsScreen extends ConsumerWidget {
+import 'notifiers/language_notifier.dart';
+
+class PickedMealsScreen extends ConsumerStatefulWidget {
   PickedMealsScreen({super.key});
+
+  @override
+  _PickedMealScreenState createState() => _PickedMealScreenState();
+}
+
+class _PickedMealScreenState extends ConsumerState<PickedMealsScreen> {
 
   late Future<List<Meal>> _pickedMealsFuture;
   late String category;
@@ -20,8 +29,13 @@ class PickedMealsScreen extends ConsumerWidget {
 
   Future<String> translate(String input) async {
     var translation = await translator.translate(input,
-        from: 'en', to: 'ru');
+        from: 'en', to: ref.watch(languageProvider));
     return translation.text;
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   Future<List<Meal>> getPickedMeals(String category) async {
@@ -49,7 +63,7 @@ class PickedMealsScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     category = ref.watch(categoryProvider);
     _pickedMealsFuture = getPickedMeals(category);
 
