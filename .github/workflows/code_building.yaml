@@ -1,10 +1,11 @@
 name: Flutter Code Building
 
+
 on:
   push:
-    branches: [ feature-ci-cd, develop ]
+    branches: [ feature-ci-cd, develop, main ]
   pull_request:
-    branches: [ feature-ci-cd, develop ]
+    branches: [ feature-ci-cd, develop, main ]
 
 jobs:
   test:
