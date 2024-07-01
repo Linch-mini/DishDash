@@ -4,12 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'meal.dart';
 import 'notifiers/favorites_notifier.dart';
+import 'background_painter.dart';
+import 'package:translator/translator.dart';
 
 class MealScreen extends ConsumerWidget {
   MealScreen({super.key});
 
   late bool isFavorited;
   late Future<int> mealId;
+
+  final translator = GoogleTranslator();
+
+  Future<String> translate(String input) async {
+    var translation = await translator.translate(input, from: 'en', to: 'ru');
+    return translation.text;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,25 +27,32 @@ class MealScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Meal Details',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20.0),
+        title: FutureBuilder<String>(
+          future: translate('Meal Details'),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData) {
+              return Text(snapshot.data!);
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
         ),
         centerTitle: true,
       ),
-      body: Stack(
-        children: <Widget>[
-          FutureBuilder<int>(
-            future: mealId,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (snapshot.hasData) {
-                isFavorited =
-                    ref.watch(favoriteMealsProvider).contains(snapshot.data);
+      body: CustomPaint(
+        painter: BackgroundPainter(),
+        child: Stack(
+          children: <Widget>[
+            FutureBuilder<int>(
+              future: mealId,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (snapshot.hasData) {
+                  isFavorited =
+                      ref.watch(favoriteMealsProvider).contains(snapshot.data);
 
                 return FutureBuilder<Meal>(
                   future: favoritesNotifier.getMeal(snapshot.data!),
@@ -58,13 +74,23 @@ class MealScreen extends ConsumerWidget {
                                 const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
                             child: Align(
                               alignment: Alignment.center,
-                              child: Text(
-                                mealSnapshot.data!.name,
-                                style: const TextStyle(
-                                  fontSize: 28.0,
+                              child: FutureBuilder<String>(
+                                  future: translate(mealSnapshot.data!.name),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(
+                                          fontSize: 28.0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  },
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
                             ),
                           ),
                           Padding(
@@ -111,13 +137,23 @@ class MealScreen extends ConsumerWidget {
                                   ),
                                   ...List.generate(
                                     mealSnapshot.data!.ingredients.length,
-                                    (index) => Text(
-                                      '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}',
-                                      style: const TextStyle(
-                                        fontSize: 18.0,
+                                    (index) => FutureBuilder<String>(
+                                        future: translate(
+                                            '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}'),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data!,
+                                              style: const TextStyle(
+                                                  fontSize: 18.0),
+                                              textAlign: TextAlign.center,
+                                            );
+                                          } else {
+                                            return const CircularProgressIndicator();
+                                          }
+                                        },
                                       ),
-                                      textAlign: TextAlign.center,
-                                    ),
                                   ),
                                 ],
                               ),
