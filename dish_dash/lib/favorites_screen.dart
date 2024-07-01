@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:translator/translator.dart';
@@ -5,19 +7,29 @@ import 'background_painter.dart';
 import 'custom_theme.dart';
 import 'meal.dart';
 import 'notifiers/favorites_notifier.dart';
+import 'notifiers/language_notifier.dart';
 
-class FavoritesScreen extends ConsumerWidget {
-  FavoritesScreen({super.key});
+class FavoritesScreen extends ConsumerStatefulWidget {
+  const FavoritesScreen({super.key});
+
+  @override
+  _FavoritesScreenState createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   final translator = GoogleTranslator();
 
   Future<String> translate(String input) async {
-    var translation = await translator.translate(input,
-        from: 'en', to: 'ru');
+    var translation = await translator.translate(
+      input,
+      from: 'en',
+      to: ref.watch(languageProvider),
+    );
     return translation.text;
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: FutureBuilder<String>(

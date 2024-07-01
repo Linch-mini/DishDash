@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, library_private_types_in_public_api
 
 import 'package:dish_dash/custom_theme.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +8,16 @@ import 'notifiers/favorites_notifier.dart';
 import 'background_painter.dart';
 import 'package:translator/translator.dart';
 
-class MealScreen extends ConsumerWidget {
-  MealScreen({super.key});
+import 'notifiers/language_notifier.dart';
+
+class MealScreen extends ConsumerStatefulWidget {
+  const MealScreen({super.key});
+
+  @override
+  _MealScreenState createState() => _MealScreenState();
+}
+
+class _MealScreenState extends ConsumerState<MealScreen> {
 
   late bool isFavorited;
   late Future<int> mealId;
@@ -17,12 +25,16 @@ class MealScreen extends ConsumerWidget {
   final translator = GoogleTranslator();
 
   Future<String> translate(String input) async {
-    var translation = await translator.translate(input, from: 'en', to: 'ru');
+    var translation = await translator.translate(
+      input,
+      from: 'en',
+      to: ref.watch(languageProvider),
+    );
     return translation.text;
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final favoritesNotifier = ref.read(favoriteMealsProvider.notifier);
     mealId = favoritesNotifier.getCurrentMealId();
 

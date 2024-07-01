@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:translator/translator.dart';
 import 'background_painter.dart';
 import 'notifiers/category_notifier.dart';
+import 'notifiers/language_notifier.dart';
 
 class CategoryScreen extends ConsumerStatefulWidget {
   const CategoryScreen({super.key});
@@ -21,8 +22,11 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   final translator = GoogleTranslator();
 
   Future<String> translate(String input) async {
-    var translation = await translator.translate(input,
-        from: 'en', to: 'ru');
+    var translation = await translator.translate(
+      input,
+      from: 'en',
+      to: ref.watch(languageProvider),
+    );
     return translation.text;
   }
 
@@ -84,7 +88,9 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                   return Card(
                     child: InkWell(
                       onTap: () {
-                        ref.read(categoryProvider.notifier).updateCategory(snapshot.data![index]);
+                        ref
+                            .read(categoryProvider.notifier)
+                            .updateCategory(snapshot.data![index]);
                         Navigator.pushNamed(
                           context,
                           '/meals',
