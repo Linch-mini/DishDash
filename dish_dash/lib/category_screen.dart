@@ -64,7 +64,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         centerTitle: true,
       ),
       body: CustomPaint(
-        painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
+        painter: BackgroundPainter(themeMode: ref.watch(themeProvider)),
         child: FutureBuilder<List<String>>(
           future: _categoriesFuture,
           builder: (context, snapshot) {

@@ -6,11 +6,12 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback changeLanguageCallback;
 
-  const CustomAppBar({Key? key, required this.title, required this.changeLanguageCallback}) : super(key: key);
+  const CustomAppBar({super.key, required this.title, required this.changeLanguageCallback});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
+    final themeMode = ref.read(themeProvider.notifier).getCurrentTheme();
+    print(themeMode);
     return AppBar(
       backgroundColor: Colors.transparent,
       title: Text(title),

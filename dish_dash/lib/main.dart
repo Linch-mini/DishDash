@@ -28,7 +28,7 @@ class MainApp extends ConsumerWidget {
         "/categories": (context) => const CategoryScreen(),
         "/meals": (context) => PickedMealsScreen(),
         "/meal_card": (context) => MealScreen(),
-        "/favorites": (context) => const FavoritesScreen(),
+        "/favorites": (context) => FavoritesScreen(),
       },
     );
   }
