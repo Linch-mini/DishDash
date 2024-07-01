@@ -26,8 +26,11 @@ class _StartScreenState extends ConsumerState<StartScreen>
   late Animation<double> _animation;
 
   Future<String> translate(String input) async {
-    var translation = await translator.translate(input,
-        from: 'en', to: ref.watch(languageProvider));
+    var translation = await translator.translate(
+      input,
+      from: 'en',
+      to: ref.watch(languageProvider),
+    );
     return translation.text;
   }
 
@@ -64,7 +67,7 @@ class _StartScreenState extends ConsumerState<StartScreen>
             ref.read(languageProvider.notifier).toggleLanguage,
       ),
       body: CustomPaint(
-        painter:  BackgroundPainter(themeMode: ref.watch(themeProvider)),
+        painter: BackgroundPainter(themeMode: ref.watch(themeProvider)),
         child: Stack(
           children: [
             Positioned.fill(
@@ -110,8 +113,8 @@ class _StartScreenState extends ConsumerState<StartScreen>
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 184, 60, 206),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 184, 60, 206),
                                       textStyle: const TextStyle(fontSize: 20),
                                     ),
                                     child: FutureBuilder<String>(
@@ -140,8 +143,8 @@ class _StartScreenState extends ConsumerState<StartScreen>
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 184, 60, 206),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 184, 60, 206),
                                       textStyle: const TextStyle(fontSize: 20),
                                     ),
                                     child: FutureBuilder<String>(
@@ -170,8 +173,8 @@ class _StartScreenState extends ConsumerState<StartScreen>
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 184, 60, 206),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 184, 60, 206),
                                       textStyle: const TextStyle(fontSize: 20),
                                     ),
                                     child: FutureBuilder<String>(
