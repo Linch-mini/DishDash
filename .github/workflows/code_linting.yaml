@@ -1,0 +1,24 @@
+name: Flutter Code Linting
+
+on:
+  push:
+    branches: [ feature-ci-cd, develop ]
+  pull_request:
+    branches: [ feature-ci-cd, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.22.2
+
+      - run: flutter pub get
+        working-directory: ./dish_dash
+
+      - run: flutter analyze  --no-fatal-warnings --no-fatal-infos
+        working-directory: ./dish_dash

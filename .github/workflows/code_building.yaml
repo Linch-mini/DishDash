@@ -1,0 +1,29 @@
+name: Flutter Code Building
+
+on:
+  push:
+    branches: [ feature-ci-cd, develop ]
+  pull_request:
+    branches: [ feature-ci-cd, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.22.2
+
+      - run: flutter create -t app new_project
+      - run: cp -r ./dish_dash/lib ./new_project/lib
+      - run: cp ./dish_dash/pubspec.yaml ./new_project/pubspec.yaml
+      - run: cp -r ./dish_dash/assets ./new_project/assets
+
+      - run: flutter pub get
+        working-directory: ./new_project
+
+      - run: flutter build apk --release
+        working-directory: ./new_project
