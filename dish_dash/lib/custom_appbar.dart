@@ -4,7 +4,9 @@ import 'custom_theme.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
-  const CustomAppBar({super.key, required this.title});
+  final VoidCallback changeLanguageCallback;
+
+  const CustomAppBar({Key? key, required this.title, required this.changeLanguageCallback}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,6 +20,10 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           onChanged: (value) {
             ref.read(themeProvider.notifier).toggleTheme(value);
           },
+        ),
+        IconButton(
+          icon: const Icon(Icons.language),
+          onPressed: changeLanguageCallback,
         ),
       ],
     );

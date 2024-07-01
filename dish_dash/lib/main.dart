@@ -5,6 +5,8 @@ import 'start_screen.dart';
 import 'category_screen.dart';
 import 'meal_screen.dart';
 import 'picked_meals_screen.dart';
+import 'start_screen.dart';
+import 'custom_theme.dart';
 
 void main() {
   runApp(const ProviderScope(child: MainApp()));

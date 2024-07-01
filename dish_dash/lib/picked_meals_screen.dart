@@ -7,12 +7,20 @@ import 'package:http/http.dart' as http;
 import 'meal.dart';
 import 'notifiers/favorites_notifier.dart';
 import 'background_painter.dart';
+import 'package:translator/translator.dart';
 
 class PickedMealsScreen extends ConsumerWidget {
   PickedMealsScreen({super.key});
 
   late Future<List<Meal>> _pickedMealsFuture;
   late String category;
+  final translator = GoogleTranslator();
+
+  Future<String> translate(String input) async {
+    var translation = await translator.translate(input,
+        from: 'en', to: 'ru'); // replace 'ru' with your desired language
+    return translation.text;
+  }
 
   Future<List<Meal>> getPickedMeals(String category) async {
     final response = await http.get(Uri.parse(
@@ -38,7 +46,7 @@ class PickedMealsScreen extends ConsumerWidget {
     }
   }
 
-    @override
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
     category = arguments['category'];
@@ -46,9 +54,15 @@ class PickedMealsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Picked Meals',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20.0),
+        title: FutureBuilder<String>(
+          future: translate('Picked Meals'),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData) {
+              return Text(snapshot.data!);
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
         ),
         centerTitle: true,
       ),
@@ -73,24 +87,25 @@ class PickedMealsScreen extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   return Card(
                     child: InkWell(
-                    onTap: () {
-                      final favoritesNotifier =
-                          ref.read(favoriteMealsProvider.notifier);
-                      favoritesNotifier
-                          .saveCurrentMealId(int.parse(meals[index].id));
-                      Navigator.pushNamed(
-                        context,
-                        '/meal_card',
-                        arguments: {'mealId': int.parse(meals[index].id)},
-                      );
-                    },
+                      onTap: () {
+                        final favoritesNotifier =
+                            ref.read(favoriteMealsProvider.notifier);
+                        favoritesNotifier
+                            .saveCurrentMealId(int.parse(meals[index].id));
+                        Navigator.pushNamed(
+                          context,
+                          '/meal_card',
+                          arguments: {'mealId': int.parse(meals[index].id)},
+                        );
+                      },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           const SizedBox(height: 5),
                           FractionallySizedBox(
-                            widthFactor: 0.7, 
-                            child: Image.network(meals[index].imageUrl,
+                            widthFactor: 0.7,
+                            child: Image.network(
+                              meals[index].imageUrl,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -99,13 +114,23 @@ class PickedMealsScreen extends ConsumerWidget {
                               padding: const EdgeInsets.all(5.0),
                               child: Align(
                                 alignment: Alignment.bottomCenter,
-                                child: Text(
-                                  meals[index].name.split(" ").length > 4
-                                    ? "${meals[index].name.split(" ").take(4).join(" ")}..."
-                                    : meals[index].name,
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
+                                child: FutureBuilder<String>(
+                                  future: translate(meals[index].name),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!.split(" ").length > 4
+                                            ? "${snapshot.data!.split(" ").take(4).join(" ")}..."
+                                            : snapshot.data!,
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  },
                                 ),
                               ),
                             ),
