@@ -58,7 +58,7 @@ class FavoritesScreen extends ConsumerWidget {
                             ref.read(favoriteMealsProvider.notifier);
                         favoritesNotifier
                             .saveCurrentMealId(int.parse(meals[index].id));
-                        Navigator.pushNamed(
+                        Navigator.pushReplacementNamed(
                           context,
                           '/meal_card',
                         );
