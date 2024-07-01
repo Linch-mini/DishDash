@@ -49,7 +49,10 @@ class StartScreen extends ConsumerWidget {
                     ),
                     child: const Text('Favourites'),
                     onPressed: () {
-                      // Navigate to Favourites Screen
+                      Navigator.pushNamed(
+                        context,
+                        '/favorites',
+                      );
                     },
                   ),
                 ),
@@ -90,7 +93,6 @@ class StartScreen extends ConsumerWidget {
                       Navigator.pushNamed(
                         context,
                         '/meal_card',
-                        arguments: {'mealId': int.parse(randomMeal.id)},
                       );
                     },
                   ),

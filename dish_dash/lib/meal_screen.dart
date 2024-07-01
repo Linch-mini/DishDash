@@ -3,8 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'meal.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'notifiers/favorites_notifier.dart';
 
 class MealScreen extends ConsumerWidget {
@@ -12,23 +10,6 @@ class MealScreen extends ConsumerWidget {
 
   late bool isFavorited;
   late Future<int> mealId;
-
-  Future<Meal> getMeal(int id) async {
-    final response = await http.get(
-        Uri.parse('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$id'));
-
-    if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['meals'] != null && jsonResponse['meals'].isNotEmpty) {
-        Map<String, dynamic> mealData = jsonResponse['meals'][0];
-        return Meal.fromJson(mealData);
-      } else {
-        throw Exception('No meal data found');
-      }
-    } else {
-      throw Exception('Failed to load meal');
-    }
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +39,7 @@ class MealScreen extends ConsumerWidget {
                     ref.watch(favoriteMealsProvider).contains(snapshot.data);
 
                 return FutureBuilder<Meal>(
-                  future: getMeal(snapshot.data!),
+                  future: favoritesNotifier.getMeal(snapshot.data!),
                   builder: (context, mealSnapshot) {
                     if (mealSnapshot.connectionState ==
                         ConnectionState.waiting) {
