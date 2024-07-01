@@ -1,6 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api, must_be_immutable
 
-import 'package:dish_dash/category_screen.dart';
 import 'package:dish_dash/custom_theme.dart';
 import 'package:dish_dash/notifiers/category_notifier.dart';
 import 'package:flutter/material.dart';
