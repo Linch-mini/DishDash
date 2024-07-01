@@ -182,7 +182,10 @@ class _StartScreenState extends ConsumerState<StartScreen>
                                       builder: (BuildContext context,
                                           AsyncSnapshot<String> snapshot) {
                                         if (snapshot.hasData) {
-                                          return Text(snapshot.data!);
+                                          return Text(
+                                            snapshot.data!,
+                                            textAlign: TextAlign.center,
+                                          );
                                         } else {
                                           return const CircularProgressIndicator();
                                         }
