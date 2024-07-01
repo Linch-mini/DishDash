@@ -50,9 +50,7 @@ class PickedMealsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final Map arguments = ModalRoute.of(context)?.settings.arguments as Map;
-    // category = arguments['category'];
-    category = ref.read(categoryProvider);
+    category = ref.watch(categoryProvider);
     _pickedMealsFuture = getPickedMeals(category);
 
     return Scaffold(
@@ -70,7 +68,7 @@ class PickedMealsScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: CustomPaint(
-        painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
+        painter: BackgroundPainter(themeMode: ref.watch(themeProvider)),
         child: FutureBuilder<List<Meal>>(
           future: _pickedMealsFuture,
           builder: (context, snapshot) {
