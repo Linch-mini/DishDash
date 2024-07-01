@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:dish_dash/custom_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'custom_appbar.dart';
@@ -68,7 +70,7 @@ class _StartScreenState extends ConsumerState<StartScreen>
         children: [
           CustomPaint(
             size: const Size(double.infinity, double.infinity),
-            painter: BackgroundPainter(),
+            painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
           ),
           Positioned.fill(
             child: Column(
@@ -129,10 +131,6 @@ class _StartScreenState extends ConsumerState<StartScreen>
                                     },
                                   ),
                                   onPressed: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/favorites',
-                                    );
                                     Navigator.pushNamed(
                                       context,
                                       '/favorites',

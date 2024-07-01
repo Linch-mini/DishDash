@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:dish_dash/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'meal.dart';
@@ -40,7 +41,7 @@ class MealScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: CustomPaint(
-        painter: BackgroundPainter(),
+        painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
         child: Stack(
           children: <Widget>[
             FutureBuilder<int>(
@@ -54,27 +55,27 @@ class MealScreen extends ConsumerWidget {
                   isFavorited =
                       ref.watch(favoriteMealsProvider).contains(snapshot.data);
 
-                return FutureBuilder<Meal>(
-                  future: favoritesNotifier.getMeal(snapshot.data!),
-                  builder: (context, mealSnapshot) {
-                    if (mealSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (mealSnapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Error: ${mealSnapshot.error}',
-                        ),
-                      );
-                    } else if (mealSnapshot.hasData) {
-                      return ListView(
-                        children: <Widget>[
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: FutureBuilder<String>(
+                  return FutureBuilder<Meal>(
+                    future: favoritesNotifier.getMeal(snapshot.data!),
+                    builder: (context, mealSnapshot) {
+                      if (mealSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (mealSnapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Error: ${mealSnapshot.error}',
+                          ),
+                        );
+                      } else if (mealSnapshot.hasData) {
+                        return ListView(
+                          children: <Widget>[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 4.0),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: FutureBuilder<String>(
                                   future: translate(mealSnapshot.data!.name),
                                   builder: (BuildContext context,
                                       AsyncSnapshot<String> snapshot) {
@@ -91,53 +92,54 @@ class MealScreen extends ConsumerWidget {
                                     }
                                   },
                                 ),
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0),
-                            child: Text(
-                              'Category: ${mealSnapshot.data!.category}',
-                              style: const TextStyle(
-                                fontSize: 22.0,
                               ),
-                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              'Area: ${mealSnapshot.data!.area}',
-                              style: const TextStyle(
-                                fontSize: 22.0,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0),
+                              child: Text(
+                                'Category: ${mealSnapshot.data!.category}',
+                                style: const TextStyle(
+                                  fontSize: 22.0,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          Center(
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.95,
-                              child: Image.network(mealSnapshot.data!.imageUrl),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                'Area: ${mealSnapshot.data!.area}',
+                                style: const TextStyle(
+                                  fontSize: 22.0,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  const Text(
-                                    'Ingredients:',
-                                    style: TextStyle(
-                                      fontSize: 22.0,
+                            const SizedBox(height: 10),
+                            Center(
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.95,
+                                child:
+                                    Image.network(mealSnapshot.data!.imageUrl),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    const Text(
+                                      'Ingredients:',
+                                      style: TextStyle(
+                                        fontSize: 22.0,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  ...List.generate(
-                                    mealSnapshot.data!.ingredients.length,
-                                    (index) => FutureBuilder<String>(
+                                    ...List.generate(
+                                      mealSnapshot.data!.ingredients.length,
+                                      (index) => FutureBuilder<String>(
                                         future: translate(
                                             '${mealSnapshot.data!.ingredients[index]}: ${mealSnapshot.data!.measures[index]}'),
                                         builder: (BuildContext context,
@@ -154,54 +156,55 @@ class MealScreen extends ConsumerWidget {
                                           }
                                         },
                                       ),
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Instructions:\n${mealSnapshot.data!.instructions}',
-                              style: const TextStyle(fontSize: 18.0),
-                              textAlign: TextAlign.center,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Instructions:\n${mealSnapshot.data!.instructions}',
+                                style: const TextStyle(fontSize: 18.0),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return const Center(child: Text('No meal data found'));
-                    }
-                  },
-                );
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
-          ),
-          FutureBuilder(
-            future: favoritesNotifier.getCurrentMealId(),
-            builder: (context, mealIdSnapshot) {
-              return Positioned(
-                top: 10.0,
-                right: 10.0,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    if (isFavorited) {
-                      favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
-                    } else {
-                      favoritesNotifier.addFavorite(mealIdSnapshot.data!);
-                    }
-                  },
-                  child: Icon(
-                    Icons.favorite,
-                    color: isFavorited ? Colors.red : Colors.grey,
+                          ],
+                        );
+                      } else {
+                        return const Center(child: Text('No meal data found'));
+                      }
+                    },
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
+            FutureBuilder(
+              future: favoritesNotifier.getCurrentMealId(),
+              builder: (context, mealIdSnapshot) {
+                return Positioned(
+                  top: 10.0,
+                  right: 10.0,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      if (isFavorited) {
+                        favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
+                      } else {
+                        favoritesNotifier.addFavorite(mealIdSnapshot.data!);
+                      }
+                    },
+                    child: Icon(
+                      Icons.favorite,
+                      color: isFavorited ? Colors.red : Colors.grey,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
