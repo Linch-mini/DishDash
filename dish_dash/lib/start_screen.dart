@@ -3,13 +3,11 @@
 import 'dart:convert';
 import 'package:dish_dash/custom_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'custom_appbar.dart';
 import 'meal.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'background_painter.dart';
 import 'notifiers/favorites_notifier.dart';
 import 'notifiers/language_notifier.dart';

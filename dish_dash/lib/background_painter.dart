@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'custom_theme.dart';
 
 class BackgroundPainter extends CustomPainter {
   final ThemeMode themeMode;

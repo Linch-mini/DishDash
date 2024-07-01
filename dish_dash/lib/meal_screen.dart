@@ -39,6 +39,30 @@ class MealScreen extends ConsumerWidget {
           },
         ),
         centerTitle: true,
+      actions: <Widget>[
+        FutureBuilder(
+          future: favoritesNotifier.getCurrentMealId(),
+          builder: (context, mealIdSnapshot) {
+            if (mealIdSnapshot.connectionState == ConnectionState.done) {
+              return IconButton(
+                icon: Icon(
+                  Icons.favorite,
+                  color: isFavorited ? Colors.red : Colors.grey,
+                ),
+                onPressed: () {
+                  if (isFavorited) {
+                    favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
+                  } else {
+                    favoritesNotifier.addFavorite(mealIdSnapshot.data!);
+                  }
+                },
+              );
+            } else {
+              return Container();
+            }
+          },
+        ),
+      ],
       ),
       body: CustomPaint(
         painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
@@ -179,28 +203,6 @@ class MealScreen extends ConsumerWidget {
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
-              },
-            ),
-            FutureBuilder(
-              future: favoritesNotifier.getCurrentMealId(),
-              builder: (context, mealIdSnapshot) {
-                return Positioned(
-                  top: 10.0,
-                  right: 10.0,
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      if (isFavorited) {
-                        favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
-                      } else {
-                        favoritesNotifier.addFavorite(mealIdSnapshot.data!);
-                      }
-                    },
-                    child: Icon(
-                      Icons.favorite,
-                      color: isFavorited ? Colors.red : Colors.grey,
-                    ),
-                  ),
-                );
               },
             ),
           ],
