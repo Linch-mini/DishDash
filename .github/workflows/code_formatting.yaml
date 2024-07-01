@@ -2,9 +2,9 @@ name: Flutter Code Formatting
 
 on:
   push:
-    branches: [ feature-ci-cd, develop ]
+    branches: [ feature-ci-cd, develop, main ]
   pull_request:
-    branches: [ feature-ci-cd, develop ]
+    branches: [ feature-ci-cd, develop, main ]
 
 jobs:
   test:
@@ -19,6 +19,3 @@ jobs:
 
       - run: flutter pub get
         working-directory: ./dish_dash
-
-      #- run: flutter format --set-exit-if-changed .
-      #  working-directory: ./dish_dash
