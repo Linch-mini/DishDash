@@ -39,30 +39,30 @@ class MealScreen extends ConsumerWidget {
           },
         ),
         centerTitle: true,
-      actions: <Widget>[
-        FutureBuilder(
-          future: favoritesNotifier.getCurrentMealId(),
-          builder: (context, mealIdSnapshot) {
-            if (mealIdSnapshot.connectionState == ConnectionState.done) {
-              return IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: isFavorited ? Colors.red : Colors.grey,
-                ),
-                onPressed: () {
-                  if (isFavorited) {
-                    favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
-                  } else {
-                    favoritesNotifier.addFavorite(mealIdSnapshot.data!);
-                  }
-                },
-              );
-            } else {
-              return Container();
-            }
-          },
-        ),
-      ],
+        actions: <Widget>[
+          FutureBuilder(
+            future: favoritesNotifier.getCurrentMealId(),
+            builder: (context, mealIdSnapshot) {
+              if (mealIdSnapshot.connectionState == ConnectionState.done) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.favorite,
+                    color: isFavorited ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: () {
+                    if (isFavorited) {
+                      favoritesNotifier.removeFavorite(mealIdSnapshot.data!);
+                    } else {
+                      favoritesNotifier.addFavorite(mealIdSnapshot.data!);
+                    }
+                  },
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
+        ],
       ),
       body: CustomPaint(
         painter: BackgroundPainter(themeMode: ref.read(themeProvider)),
@@ -121,24 +121,44 @@ class MealScreen extends ConsumerWidget {
                             Padding(
                               padding:
                                   const EdgeInsets.fromLTRB(8.0, 0, 8.0, 4.0),
-                              child: Text(
-                                'Category: ${mealSnapshot.data!.category}',
-                                style: const TextStyle(
-                                  fontSize: 22.0,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                              child: FutureBuilder<String>(
+                                  future: translate(
+                                      'Category: ${mealSnapshot.data!.category}'),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(
+                                          fontSize: 22.0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  }),
                             ),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                'Area: ${mealSnapshot.data!.area}',
-                                style: const TextStyle(
-                                  fontSize: 22.0,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
+                              child: FutureBuilder<String>(
+                                  future: translate(
+                                      'Area: ${mealSnapshot.data!.area}'),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(
+                                          fontSize: 22.0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  }),
                             ),
                             const SizedBox(height: 10),
                             Center(
@@ -154,13 +174,22 @@ class MealScreen extends ConsumerWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
-                                    const Text(
-                                      'Ingredients:',
-                                      style: TextStyle(
-                                        fontSize: 22.0,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
+                                    FutureBuilder<String>(
+                                        future: translate('Ingredients:'),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String> snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(
+                                              snapshot.data!,
+                                              style: const TextStyle(
+                                                fontSize: 22.0,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            );
+                                          } else {
+                                            return const CircularProgressIndicator();
+                                          }
+                                        }),
                                     ...List.generate(
                                       mealSnapshot.data!.ingredients.length,
                                       (index) => FutureBuilder<String>(
@@ -187,11 +216,21 @@ class MealScreen extends ConsumerWidget {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Instructions:\n${mealSnapshot.data!.instructions}',
-                                style: const TextStyle(fontSize: 18.0),
-                                textAlign: TextAlign.center,
-                              ),
+                              child: FutureBuilder<String>(
+                                  future: translate(
+                                      'Instructions:\n${mealSnapshot.data!.instructions}'),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data!,
+                                        style: const TextStyle(fontSize: 18.0),
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return const CircularProgressIndicator();
+                                    }
+                                  }),
                             ),
                           ],
                         );

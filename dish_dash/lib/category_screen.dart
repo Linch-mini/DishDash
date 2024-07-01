@@ -22,7 +22,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
 
   Future<String> translate(String input) async {
     var translation = await translator.translate(input,
-        from: 'en', to: 'ru'); // replace 'ru' with your desired language
+        from: 'en', to: 'ru');
     return translation.text;
   }
 
